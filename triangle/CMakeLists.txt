@@ -20,7 +20,9 @@ add_executable(${PROJECT_NAME} main.cpp)
 
 #copy all glsl files to build folder
 file(GLOB GLSL_FILES "*.glsl")
-file(COPY ${GLSL_FILES} DESTINATION .)
+foreach(glsl_file ${GLSL_FILES})
+    configure_file(${glsl_file} . COPYONLY)
+endforeach(glsl_file)
 
 TARGET_LINK_LIBRARIES(${PROJECT_NAME} GLEW)
 TARGET_LINK_LIBRARIES(${PROJECT_NAME} glfw)

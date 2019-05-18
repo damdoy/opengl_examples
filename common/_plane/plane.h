@@ -25,6 +25,13 @@ public:
          -1.0f,  0.0f, -1.0f,
       };
 
+      GLfloat normals[] = {
+         0.0f, 1.0f, 0.0f,
+         0.0f, 1.0f, 0.0f,
+         0.0f, 1.0f, 0.0f,
+         0.0f, 1.0f, 0.0f,
+      };
+
       GLuint vpoint_index[] = {
          0, 1, 2,
          0, 2, 3
@@ -50,6 +57,14 @@ public:
       GLuint vtexcoord_id = glGetAttribLocation(_pid, "vtexcoord");
       glEnableVertexAttribArray(vtexcoord_id);
       glVertexAttribPointer(vtexcoord_id, 2, GL_FLOAT, GL_FALSE, 0, 0);
+
+      glGenBuffers(1, &_vbo_normals);
+      glBindBuffer(GL_ARRAY_BUFFER, _vbo_normals);
+      glBufferData(GL_ARRAY_BUFFER, sizeof(normals), normals, GL_STATIC_DRAW);
+
+      GLuint id_pos = glGetAttribLocation(_pid, "normal");
+      glEnableVertexAttribArray(id_pos);
+      glVertexAttribPointer(id_pos, 3, GL_FLOAT, GL_FALSE, 0, NULL);
 
       glGenBuffers(1, &_vbo_idx);
       glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, _vbo_idx);
@@ -106,6 +121,7 @@ private:
    GLuint _vbo;
    GLuint _vbo_idx;
    GLuint _vbo_tex;
+   GLuint _vbo_normals;
    GLuint _pid;
    GLuint _tex;
 };

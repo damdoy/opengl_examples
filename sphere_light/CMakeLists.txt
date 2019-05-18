@@ -1,6 +1,6 @@
 cmake_minimum_required(VERSION 2.8)
 
-set(PROJECT_NAME rotating_cube)
+set(PROJECT_NAME sphere_light)
 
 project(${PROJECT_NAME})
 
@@ -17,17 +17,20 @@ set(LIB_PATH "/usr/lib")
 INCLUDE_DIRECTORIES(${INCLUDE_PATH})
 LINK_DIRECTORIES(${LIB_PATH})
 
-file(GLOB SOURCE_FILES "*.cpp" "*.h")
+file(GLOB SOURCE_FILES "*.cpp" "*.h" "*.glsl")
 add_executable(${PROJECT_NAME} ${SOURCE_FILES})
 
 #copy all glsl files to build folder
 file(GLOB_RECURSE GLSL_FILES "*.glsl")
-#file(COPY ${GLSL_FILES} DESTINATION .)
-#configure_file copies files every "make"
+
 foreach(glsl_file ${GLSL_FILES})
     configure_file(${glsl_file} . COPYONLY)
 endforeach(glsl_file)
 
+#configure_file(${GLSL_FILES} . COPYONLY)
+
+
 TARGET_LINK_LIBRARIES(${PROJECT_NAME} GLEW)
 TARGET_LINK_LIBRARIES(${PROJECT_NAME} glfw)
 TARGET_LINK_LIBRARIES(${PROJECT_NAME} GL)
+TARGET_LINK_LIBRARIES(${PROJECT_NAME} IL)

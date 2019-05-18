@@ -22,9 +22,14 @@ add_executable(${PROJECT_NAME} ${SOURCE_FILES})
 
 #copy all glsl files to build folder
 file(GLOB_RECURSE GLSL_FILES "*.glsl")
-file(COPY ${GLSL_FILES} DESTINATION .)
+foreach(glsl_file ${GLSL_FILES})
+    configure_file(${glsl_file} . COPYONLY)
+endforeach(glsl_file)
+
 file(GLOB_RECURSE TEXTURE_FILES "*.png")
-file(COPY ${TEXTURE_FILES} DESTINATION .)
+foreach(texture_file ${TEXTURE_FILES})
+    configure_file(${texture_file} . COPYONLY)
+endforeach(texture_file)
 
 TARGET_LINK_LIBRARIES(${PROJECT_NAME} GLEW)
 TARGET_LINK_LIBRARIES(${PROJECT_NAME} glfw)

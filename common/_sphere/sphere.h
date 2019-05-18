@@ -17,7 +17,7 @@ const float PI = 3.141592;
 // normals (in order to test both)
 class Sphere{
 public:
-   void init(GLuint shader_pid, GLfloat light_position[3], unsigned int vertical_segments = 0, unsigned int horizontal_segments = 0){
+   void init(GLuint shader_pid, unsigned int vertical_segments = 0, unsigned int horizontal_segments = 0){
       _pid = shader_pid;
       if(_pid == 0) exit(-1);
 
@@ -72,27 +72,17 @@ public:
       glEnableVertexAttribArray(id_pos);
       glVertexAttribPointer(id_pos, 3, GL_FLOAT, GL_FALSE, 0, NULL);
 
-      glUniform3fv( glGetUniformLocation(_pid, "light_position"), 1, light_position);
-      glUniform1ui( glGetUniformLocation(_pid, "lighting_mode"), 0);
-
 
       glBindVertexArray(0);
    }
 
-   void draw(glm::mat4x4 model, glm::mat4x4 view, glm::mat4x4 projection, GLfloat light_position[3], GLuint light_mode, GLfloat camera_position[3], bool activate_specular, GLfloat spot_direction[3], bool activate_spot){
+   void draw(glm::mat4x4 model, glm::mat4x4 view, glm::mat4x4 projection){
       glUseProgram(_pid);
       glBindVertexArray(_vao);
 
       glUniformMatrix4fv( glGetUniformLocation(_pid, "model"), 1, GL_FALSE, glm::value_ptr(model));
       glUniformMatrix4fv( glGetUniformLocation(_pid, "view"), 1, GL_FALSE, glm::value_ptr(view));
       glUniformMatrix4fv( glGetUniformLocation(_pid, "projection"), 1, GL_FALSE, glm::value_ptr(projection));
-
-      glUniform3fv( glGetUniformLocation(_pid, "light_position"), 1, light_position);
-      glUniform3fv( glGetUniformLocation(_pid, "camera_position"), 1, camera_position);
-      glUniform1ui( glGetUniformLocation(_pid, "lighting_mode"), light_mode);
-      glUniform1ui( glGetUniformLocation(_pid, "activate_specular"), activate_specular);
-      glUniform3fv( glGetUniformLocation(_pid, "spot_direction"), 1, spot_direction);
-      glUniform1ui( glGetUniformLocation(_pid, "activate_spot"), activate_spot);
 
       glDrawArrays(GL_TRIANGLES, 0, _num_vertices);
 
