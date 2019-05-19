@@ -1,5 +1,7 @@
 # Sphere lighting
 
+![screenshot1](../screenshots/sphere_light_1.png) ![screenshot2](../screenshots/sphere_light_2.png)
+
 The goal of this example is to implement a simple lighting model in opengl.
 
 A sphere is used in the middle of the scene in order to demonstrate the various lighting
