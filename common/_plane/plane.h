@@ -1,3 +1,6 @@
+#ifndef PLANE_H
+#define PLANE_H
+
 #include <GL/glew.h>
 #include <GL/glfw.h>
 #include <GL/gl.h>
@@ -45,10 +48,10 @@ public:
       glVertexAttribPointer(vpoint_id, 3, GL_FLOAT, GL_FALSE, 0, NULL);
 
       //texture coord definition
-      const GLfloat vtexcoord[] = { /*V1*/ 0.0f, 1.0f,
-                                    /*V2*/ 1.0f, 1.0f,
-                                    /*V3*/ 1.0f, 0.0f,
-                                    /*V4*/ 0.0f, 0.0f};
+      const GLfloat vtexcoord[] = { /*V1*/ 0.0f, 0.0f,
+                                    /*V2*/ 1.0f, 0.0f,
+                                    /*V3*/ 1.0f, 1.0f,
+                                    /*V4*/ 0.0f, 1.0f};
 
       glGenBuffers(1, &_vbo_tex);
       glBindBuffer(GL_ARRAY_BUFFER, _vbo_tex);
@@ -116,7 +119,7 @@ public:
       glDeleteProgram(_pid);
    }
 
-private:
+protected:
    GLuint _vao;
    GLuint _vbo;
    GLuint _vbo_idx;
@@ -125,3 +128,5 @@ private:
    GLuint _pid;
    GLuint _tex;
 };
+
+#endif
