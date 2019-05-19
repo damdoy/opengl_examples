@@ -39,12 +39,16 @@ Camera *cam;
 
 Camera_free cam_free;
 
-Plane_float plane;
+Plane_float plane_perlin;
+Plane_float plane_voronoi;
 Transform plane_transf;
 glm::mat4x4 projection_mat;
-Texture_float plane_texture;
+Texture_float plane_texture_perlin;
+Texture_float plane_texture_voronoi;
 
 Noise_generator noise_gen;
+
+uint noise_selection;
 
 GLfloat light_position[3];
 bool moving_light;
@@ -122,6 +126,13 @@ int main(){
          moving_light = true;
       }
 
+      if(glfwGetKey('1') == GLFW_PRESS){
+         noise_selection = 1;
+      }
+      if(glfwGetKey('2') == GLFW_PRESS){
+         noise_selection = 2;
+      }
+
       display();
       glfwSwapBuffers();
    }
@@ -154,15 +165,23 @@ void init(){
    plane_transf.translate(0.0f, -1.0f, 0.0f);
 
    GLuint pid_plane_shaders = load_shaders("plane_tex_vshader.glsl", "plane_tex_fshader.glsl");
-   plane.init(pid_plane_shaders);
+   plane_perlin.init(pid_plane_shaders);
+   plane_voronoi.init(pid_plane_shaders);
 
    std::vector<std::vector<float> > plane_texture_data = noise_gen.get_2D_noise(1024, 1024, -1.0f, 1.0f, -1.0f, 1.0f);
-   plane_texture.set_data(plane_texture_data);
-   plane.set_texture(&plane_texture);
+   plane_texture_perlin.set_data(plane_texture_data);
+   plane_perlin.set_texture(&plane_texture_perlin);
+
+   noise_gen.setup(4, 1, 0.5f, 0.5f, NOISE_SELECT_VORONOI);
+   std::vector<std::vector<float> > plane_texture_data_voronoi = noise_gen.get_2D_noise(1024, 1024, -1.0f, 1.0f, -1.0f, 1.0f);
+   plane_texture_voronoi.set_data(plane_texture_data_voronoi);
+   plane_voronoi.set_texture(&plane_texture_voronoi);
 
    cam_free.lookAt(3.0f, 3.0f, 3.0f, 0.0f, 0.0f, 0.0f, 0.0f, 1.0f, 0.0f);
    cam = &cam_free;
    cam_free.update_pos();
+
+   noise_selection = 1;
 }
 
 void display(){
@@ -176,7 +195,13 @@ void display(){
       light_position[2] = 2.0*sin(glfwGetTime());
    }
 
-   plane.draw(plane_transf.get_matrix(), cam->getMatrix(), projection_mat, light_position, camera_position);
+   if(noise_selection == 1){
+      plane_perlin.draw(plane_transf.get_matrix(), cam->getMatrix(), projection_mat, light_position, camera_position);
+   }
+   else if(noise_selection == 2){
+      plane_voronoi.draw(plane_transf.get_matrix(), cam->getMatrix(), projection_mat, light_position, camera_position);
+   }
+
 }
 
 void cleanup(){

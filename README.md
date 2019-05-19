@@ -8,6 +8,7 @@ Content of the repo:
 - Texture plane: Tests textures, both from an image and generated
 - Sphere light: Different lightings on a sphere: Flat Goureaud and Phong with interacitvity to select the lighting type
 - Terrain camera: A terrain generated with a Perlin noise in which we can navigate with either a free moving camera or a FPS-style one
+- Bumpmapping: Simulates bumps on a flat surface using random Perlin noise and pixel shader 
 
 ## How to build
 These examples are compiled on a Linux Mint 18.1

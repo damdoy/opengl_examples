@@ -6,7 +6,8 @@
 enum Noise_Function_select{
    NOISE_SELECT_LINEAR,
    NOISE_SELECT_EASE,
-   NOISE_SELECT_PERLIN
+   NOISE_SELECT_PERLIN,
+   NOISE_SELECT_VORONOI
 };
 
 class Noise_generator{
@@ -21,9 +22,12 @@ public:
       rand_seed = 0;
    }
 
-   //TODO: select function and params
-   void setup(){
-
+   void setup(uint noise_start_seg, uint noise_levels, float noise_start_factor, float noise_factor, Noise_Function_select noise){
+      noise_start_seg = noise_start_seg;
+      noise_levels = noise_levels;
+      noise_start_factor = noise_start_factor;
+      noise_factor = noise_factor;
+      noise_func_select = noise;
    }
 
    std::vector<std::vector<float> > get_2D_noise(unsigned int size_2d_x, unsigned int size_2d_y, float min_x, float max_x, float min_y, float max_y){
@@ -75,13 +79,16 @@ protected:
       for (uint i = 0; i < noise_levels; i++){
          switch(noise_func_select){
          case NOISE_SELECT_LINEAR:
-            val_ret = (function_frac_linear(x, y, segmentation))*amplitude +val_ret;
+            val_ret = (function_frac_linear(x, y, segmentation))*amplitude+val_ret;
             break;
          case NOISE_SELECT_EASE:
-            val_ret = (function_frac_ease(x, y, segmentation))*amplitude +val_ret;
+            val_ret = (function_frac_ease(x, y, segmentation))*amplitude+val_ret;
             break;
          case NOISE_SELECT_PERLIN:
-            val_ret = (function_frac_perlin(x, y, segmentation))*amplitude +val_ret;
+            val_ret = (function_frac_perlin(x, y, segmentation))*amplitude+val_ret;
+            break;
+         case NOISE_SELECT_VORONOI:
+            val_ret = (function_frac_voronoi(x, y, segmentation))*amplitude+val_ret;
             break;
          }
 
@@ -190,6 +197,45 @@ protected:
       pixel += 0.5f;
 
       return pixel;
+   }
+
+   float function_frac_voronoi(float x, float y, unsigned int){
+      x = (x*0.5+0.5);
+      y = (y*0.5+0.5);
+
+      x *= 4;
+      y *= 4;
+
+      float p[2];
+      float f[2];
+
+      p[0] = floorf(x);
+      p[1] = floorf(y);
+
+      f[0] = fmod(x, 1.0f);
+      f[1] = fmod(y, 1.0f);
+
+      float res = 8.0f;
+      int prec = 1;
+
+      for( int j=-prec; j<=prec; j++ ){
+         for( int i=-prec; i<=prec; i++ )
+         {
+            int b[2];
+            b[0] = i;
+            b[1] = j;
+
+            float r[2];
+            r[0] = b[0] - f[0] + fmod((p[0]+b[0]+p[1]+b[1])*1.13f, 1.0f);
+            r[1] = b[1] - f[1] + fmod((p[0]+b[0]+p[1]+b[1])*1.74f, 1.0f);
+            float d = r[0]*r[0]+r[1]*r[1];
+
+            if(d < res){
+               res = d;
+            }
+         }
+      }
+      return sqrt(res);
    }
 
    void find_gradient_from_rand(unsigned int rand_val, float gradient[2]){
