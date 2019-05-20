@@ -27,6 +27,14 @@ public:
       this->translate(glm::vec3(x, y, z));
    }
 
+   void rotate(glm::vec3 vec, float angle){
+      transform_mat = glm::rotate(transform_mat, angle, vec);
+   }
+
+   void rotate(float x, float y, float z, float angle){
+      this->rotate(glm::vec3(x, y, z), angle);
+   }
+
    glm::mat4 get_matrix(){
       return transform_mat;
    }
