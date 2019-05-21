@@ -43,7 +43,7 @@ public:
       glEnableVertexAttribArray(vtexcoord_id);
       glVertexAttribPointer(vtexcoord_id, 2, GL_FLOAT, GL_FALSE, 0, NULL);
 
-      this->_tex = texture; //frambuffer
+      this->_tex = texture; //framebuffer
       glBindTexture(GL_TEXTURE_2D, _tex);
       GLuint tex_id = glGetUniformLocation(_pid, "tex");
       glUniform1i(tex_id, 0 /*GL_TEXTURE0*/);

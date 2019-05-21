@@ -30,6 +30,10 @@ public:
       noise_func_select = noise;
    }
 
+   void set_noise_level(unsigned int noise_level){
+      this->noise_levels = noise_level;
+   }
+
    std::vector<std::vector<float> > get_2D_noise(unsigned int size_2d_x, unsigned int size_2d_y, float min_x, float max_x, float min_y, float max_y){
       std::vector<std::vector<float> > ret_vec;
 
@@ -56,9 +60,22 @@ public:
       return ret_vec;
    }
 
-   //TODO
-   // float get_noise_val(unsigned int pos_x, unsigned int pos_y){
-   //    return 0.0f;
+   float get_noise_val(float pos_x, float pos_y){
+      float (Noise_generator:: *func)(float, float) = &Noise_generator::function_recurs_noise;
+
+      return (*this.*func)(pos_x, pos_y);
+   }
+
+   // Noise_generator& operator=(const Noise_generator& input){
+   //    Noise_generator ret(input);
+   //    return ret;
+   // }
+
+   // Noise_generator(const Noise_generator& old)
+   // {
+   //    size = old_str.size;
+   //    s = new char[size+1];
+   //    strcpy(s, old_str.s);
    // }
 
 protected:
@@ -79,16 +96,16 @@ protected:
       for (uint i = 0; i < noise_levels; i++){
          switch(noise_func_select){
          case NOISE_SELECT_LINEAR:
-            val_ret = (function_frac_linear(x, y, segmentation))*amplitude+val_ret;
+            val_ret = (2.0f*function_frac_linear(x, y, segmentation)-1.0f)*amplitude+val_ret;
             break;
          case NOISE_SELECT_EASE:
-            val_ret = (function_frac_ease(x, y, segmentation))*amplitude+val_ret;
+            val_ret = (2.0f*function_frac_ease(x, y, segmentation)-1.0f)*amplitude+val_ret;
             break;
          case NOISE_SELECT_PERLIN:
-            val_ret = (function_frac_perlin(x, y, segmentation))*amplitude+val_ret;
+            val_ret = (2.0f*function_frac_perlin(x, y, segmentation)-1.0f)*amplitude+val_ret;
             break;
          case NOISE_SELECT_VORONOI:
-            val_ret = (function_frac_voronoi(x, y, segmentation))*amplitude+val_ret;
+            val_ret = (2.0f*function_frac_voronoi(x, y, segmentation)-1.0f)*amplitude+val_ret;
             break;
          }
 
@@ -283,7 +300,7 @@ protected:
       printf("(%f, %f, %f\n)", vec[0], vec[1], vec[2]);
    }
 
-   const unsigned int MAX_RAND = 0xFFFFFFFF;
+   static const unsigned int MAX_RAND = 0xFFFFFFFF;
 
    unsigned int rand(){
       static unsigned int seed = 0;

@@ -10,6 +10,7 @@ Content of the repo:
 - Terrain camera: A terrain generated with a Perlin noise in which we can navigate with either a free moving camera or a FPS-style one
 - Bumpmapping: Simulates bumps on a flat surface using random Perlin noise and pixel shader
 - Framebuffer: Displays the scene in a framebuffer, allowing post processing effects: gaussian blur, edge detection, etc.
+- LOD Terrain: Implementation of a perlin noise terrain with simple CPU LOD implementation (using quad tree), which is dynamically updated with camera position
 
 ## How to build
 These examples are compiled on a Linux Mint 18.1
