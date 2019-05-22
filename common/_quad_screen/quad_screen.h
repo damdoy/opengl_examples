@@ -43,14 +43,16 @@ public:
       glEnableVertexAttribArray(vtexcoord_id);
       glVertexAttribPointer(vtexcoord_id, 2, GL_FLOAT, GL_FALSE, 0, NULL);
 
-      this->_tex = texture; //framebuffer
-      glBindTexture(GL_TEXTURE_2D, _tex);
-      GLuint tex_id = glGetUniformLocation(_pid, "tex");
-      glUniform1i(tex_id, 0 /*GL_TEXTURE0*/);
+      this->_tex = texture;
 
       glBindVertexArray(0);
       glUseProgram(0);
   }
+
+
+   void load_texture(GLuint texture){
+      this->_tex = texture;
+   }
 
    void cleanup(){
      /// TODO
@@ -60,14 +62,20 @@ public:
       glUseProgram(_pid);
       glBindVertexArray(_vao);
 
+      glViewport(0, 0, _width, _height);
+
       glUniform1ui( glGetUniformLocation(_pid, "effect_select"), effect_select);
       glUniform1f( glGetUniformLocation(_pid, "tex_width"), _width);
       glUniform1f( glGetUniformLocation(_pid, "tex_height"), _height);
       
       glActiveTexture(GL_TEXTURE0);
       glBindTexture(GL_TEXTURE_2D, _tex);
+      GLuint tex_id = glGetUniformLocation(_pid, "tex");
+      glUniform1i(tex_id, 0 /*GL_TEXTURE0*/);
+
       glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
 
+      glBindTexture(GL_TEXTURE_2D, 0);
       glBindVertexArray(0);
       glUseProgram(0);
    }

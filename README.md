@@ -11,6 +11,7 @@ Content of the repo:
 - Bumpmapping: Simulates bumps on a flat surface using random Perlin noise and pixel shader
 - Framebuffer: Displays the scene in a framebuffer, allowing post processing effects: gaussian blur, edge detection, etc.
 - LOD Terrain: Implementation of a perlin noise terrain with simple CPU LOD implementation (using quad tree), which is dynamically updated with camera position
+- Shadow mapping: Implementation of a dynamic shadow mapping using a depth buffer from the point of view of the light, smoothing techniques are applied on the shadow to make it less pixelated
 
 ## How to build
 These examples are compiled on a Linux Mint 18.1

@@ -8,6 +8,7 @@
 #include <glm/gtc/type_ptr.hpp>
 
 #include "../shader_helper.h"
+#include "drawable.h"
 
 const float PI = 3.141592;
 
@@ -15,9 +16,9 @@ const float PI = 3.141592;
 // generated automatically.
 // But it doesn't use indexed vertices and is using both per face and per vertex
 // normals (in order to test both)
-class Sphere{
+class Sphere : public Drawable{
 public:
-   void init(GLuint shader_pid, unsigned int vertical_segments = 0, unsigned int horizontal_segments = 0){
+   void init(GLuint shader_pid, unsigned int vertical_segments, unsigned int horizontal_segments){
       _pid = shader_pid;
       if(_pid == 0) exit(-1);
 
@@ -76,6 +77,8 @@ public:
       glBindVertexArray(0);
    }
 
+
+   //minimalist draw, for simpler examples
    void draw(glm::mat4x4 model, glm::mat4x4 view, glm::mat4x4 projection){
       glUseProgram(_pid);
       glBindVertexArray(_vao);
@@ -88,6 +91,39 @@ public:
 
       glUseProgram(0);
       glBindVertexArray(0);
+   }
+
+   void draw(){
+      glUseProgram(_pid);
+      glBindVertexArray(_vao);
+
+      glUniform3fv( glGetUniformLocation(_pid, "light_position"), 1, this->light_position);
+      glUniform3fv( glGetUniformLocation(_pid, "camera_position"), 1, this->camera_position);
+      glUniform1ui( glGetUniformLocation(_pid, "lighting_mode"), 2);
+      glUniform1ui( glGetUniformLocation(_pid, "activate_specular"), 1);
+
+      glUniform1ui( glGetUniformLocation(_pid, "shadow_mapping_effect"), this->shadow_mapping_effect);
+      glUniform1ui( glGetUniformLocation(_pid, "shadow_buffer_tex_size"), this->shadow_buffer_texture_size);
+
+      if(has_shadow_buffer){
+         glUniformMatrix4fv( glGetUniformLocation(_pid, "shadow_matrix"), 1, GL_FALSE, glm::value_ptr(this->shadow_matrix));
+
+         glActiveTexture(GL_TEXTURE1);
+         glBindTexture(GL_TEXTURE_2D, _shadow_texture_id);
+         GLuint tex_id = glGetUniformLocation(_pid, "shadow_buffer_tex");
+         glUniform1i(tex_id, 1 /*GL_TEXTURE0*/);
+      }
+
+      draw(this->model_matrix, this->view_matrix, this->projection_matrix);
+
+      if(has_shadow_buffer){
+         glBindTexture(GL_TEXTURE_2D, 0);
+      }
+
+      glUseProgram(0);
+      glBindVertexArray(0);
+
+
    }
 
    void cleanup(){
