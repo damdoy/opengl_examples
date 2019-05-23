@@ -20,7 +20,7 @@ To solve this there are a few techniques:
 - bilinearly interpolate the shadow map
 - PCF: instead of testing if the fragment is in this pixel of the shadow map, test the pixels around and do an average.
 
-This techniques can produce interesting effects (see the 7x7 matrix PCF) but is costly (7x7 = 35 shadow map read per pixel)
+These techniques can produce interesting effects (see the 7x7 matrix PCF) but is costly (7x7 = 35 shadow map read per pixel)
 
 # Controls
 

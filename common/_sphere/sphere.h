@@ -103,7 +103,7 @@ public:
       glUniform1ui( glGetUniformLocation(_pid, "activate_specular"), 1);
 
       glUniform1ui( glGetUniformLocation(_pid, "shadow_mapping_effect"), this->shadow_mapping_effect);
-      glUniform1ui( glGetUniformLocation(_pid, "shadow_buffer_tex_size"), this->shadow_buffer_texture_size);
+      glUniform1ui( glGetUniformLocation(_pid, "shadow_buffer_tex_size"), this->shadow_buffer_texture_width); //width=height in this case
 
       if(has_shadow_buffer){
          glUniformMatrix4fv( glGetUniformLocation(_pid, "shadow_matrix"), 1, GL_FALSE, glm::value_ptr(this->shadow_matrix));

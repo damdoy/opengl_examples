@@ -54,6 +54,10 @@ public:
       this->_tex = texture;
    }
 
+   void set_ao_texture(GLuint ao_tex){
+      this->_ao_tex = ao_tex;
+   }
+
    void cleanup(){
      /// TODO
    }
@@ -73,6 +77,11 @@ public:
       GLuint tex_id = glGetUniformLocation(_pid, "tex");
       glUniform1i(tex_id, 0 /*GL_TEXTURE0*/);
 
+      glActiveTexture(GL_TEXTURE1);
+      glBindTexture(GL_TEXTURE_2D, _ao_tex);
+      tex_id = glGetUniformLocation(_pid, "ao_tex");
+      glUniform1i(tex_id, 1 /*GL_TEXTURE1*/);
+
       glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
 
       glBindTexture(GL_TEXTURE_2D, 0);
@@ -85,6 +94,7 @@ protected:
      GLuint _pid;
      GLuint _vbo;
      GLuint _tex;
+     GLuint _ao_tex;
      unsigned int _width;
      unsigned int _height;
 };

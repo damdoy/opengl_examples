@@ -12,6 +12,7 @@ Content of the repo:
 - Framebuffer: Displays the scene in a framebuffer, allowing post processing effects: gaussian blur, edge detection, etc.
 - LOD Terrain: Implementation of a perlin noise terrain with simple CPU LOD implementation (using quad tree), which is dynamically updated with camera position
 - Shadow mapping: Implementation of a dynamic shadow mapping using a depth buffer from the point of view of the light, smoothing techniques are applied on the shadow to make it less pixelated
+- Ambient occlusion: Deferred SSAO algorithm done in the shaders which give depth in a scene, a few different algorithms are implemented
 
 ## How to build
 These examples are compiled on a Linux Mint 18.1

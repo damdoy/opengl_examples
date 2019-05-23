@@ -12,6 +12,9 @@ public:
 
    Drawable(){
       has_shadow_buffer = false;
+      shadow_mapping_effect = 0;
+      this->window_width = 0;
+      this->window_height = 0;
    }
 
    virtual void set_model_matrix(glm::mat4x4 model){
@@ -54,16 +57,37 @@ public:
    }
 
    virtual void set_shadow_buffer_texture_size(unsigned int shadow_buffer_tex_size){
-      shadow_buffer_texture_size = shadow_buffer_tex_size;
+      shadow_buffer_texture_width = shadow_buffer_tex_size;
+      shadow_buffer_texture_height = shadow_buffer_tex_size;
+   }
+
+   virtual void set_shadow_buffer_texture_size(unsigned int shadow_buffer_tex_width, unsigned int shadow_buffer_tex_height){
+      shadow_buffer_texture_width = shadow_buffer_tex_width;
+      shadow_buffer_texture_height = shadow_buffer_tex_height;
    }
 
    virtual void set_shadow_mapping_effect(unsigned int shadow_mapping_effect){
       this->shadow_mapping_effect = shadow_mapping_effect;
    }
 
+   virtual void set_window_dim(unsigned int win_width, unsigned int win_height){
+      this->window_width = win_width;
+      this->window_height = win_height;
+   }
+
+   virtual void set_shader(GLuint shader_pid){
+      this->_pid = shader_pid;
+   }
+
+   virtual GLuint get_shader(){
+      return this->_pid;
+   }
+
    virtual void draw() = 0;
 
 protected:
+
+   GLuint _pid;
 
    glm::mat4x4 model_matrix;
    glm::mat4x4 view_matrix;
@@ -78,7 +102,10 @@ protected:
    GLuint _shadow_texture_id;
 
    unsigned shadow_mapping_effect;
-   unsigned int shadow_buffer_texture_size;
+   unsigned window_width;
+   unsigned window_height;
+   unsigned int shadow_buffer_texture_width;
+   unsigned int shadow_buffer_texture_height;
 
 };
 

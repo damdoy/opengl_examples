@@ -20,8 +20,13 @@ class Depth_framebuffer{
 
 public:
    void init(unsigned texture_size){
+      init(texture_size, texture_size);
+   }
 
-      this->texture_size = texture_size;
+   void init(unsigned tex_width, unsigned tex_height){
+
+      this->tex_width = tex_width;
+      this->tex_height = tex_height;
 
       // The framebuffer, which regroups 0, 1, or more textures, and 0 or 1 depth buffer.
       glGenFramebuffers(1, &depth_fbo);
@@ -30,7 +35,7 @@ public:
       // Depth texture. Slower than a depth buffer, but you can sample it later in your shader
       glGenTextures(1, &depth_texture_id);
       glBindTexture(GL_TEXTURE_2D, depth_texture_id);
-      glTexImage2D(GL_TEXTURE_2D, 0,GL_DEPTH_COMPONENT32, texture_size, texture_size, 0, GL_DEPTH_COMPONENT, GL_FLOAT, 0);
+      glTexImage2D(GL_TEXTURE_2D, 0,GL_DEPTH_COMPONENT32, tex_width, tex_height, 0, GL_DEPTH_COMPONENT, GL_FLOAT, 0);
       glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
       glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
       glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
@@ -46,6 +51,9 @@ public:
 
       glBindTexture(GL_TEXTURE_2D, 0);
       glBindFramebuffer(GL_FRAMEBUFFER, 0);
+
+      //default perspective matrix
+      set_perspective_mat(glm::perspective(3.1415f/1.6f, (float)tex_width/(float)tex_height, 1.0f, 1000.0f));
    }
 
    void set_light_pos(GLfloat light_position[3]){
@@ -54,12 +62,22 @@ public:
       this->light_position[2] = light_position[2];
    }
 
-   glm::mat4x4 get_depth_view_mat(){
-      glm::vec3 eye(light_position[0], light_position[1], light_position[2]);
-      glm::vec3 center(0.0f, 0.0f, 0.0f);
-      glm::vec3 up(0.0f, 1.0f, 0.0f);
+   void set_camera(Camera *cam){
+      this->camera = cam;
+   }
 
-      return glm::lookAt(eye, center, up);
+   glm::mat4x4 get_depth_view_mat(){
+      if(camera == NULL){
+         glm::vec3 eye(light_position[0], light_position[1], light_position[2]);
+         glm::vec3 center(0.0f, 0.0f, 0.0f);
+         glm::vec3 up(0.0f, 1.0f, 0.0f);
+
+         return glm::lookAt(eye, center, up);
+
+      }
+      else{
+         return this->camera->getMatrix();
+      }
    }
 
    glm::mat4x4 get_depth_perspective_mat(){
@@ -84,15 +102,18 @@ public:
       glm::vec3 up(0.0f, 1.0f, 0.0f);
 
       glm::mat4x4 view_mat = glm::lookAt(eye, center, up);
+
+      if(this->camera != NULL){
+         view_mat = camera->getMatrix();
+      }
       glm::mat4x4 projection_mat = get_perspective_mat();
-      //glm::mat4x4 projection_mat = glm::ortho(-2.0f, -2.0f, 2.0f, 2.0f);
 
       glClearDepth(1.0f);
 
       // Bind the "depth only" FBO and set the viewport to the size
       // of the depth texture
       glBindFramebuffer(GL_FRAMEBUFFER, depth_fbo);
-      glViewport(0, 0, texture_size, texture_size);
+      glViewport(0, 0, tex_width, tex_height);
 
       glClear(GL_DEPTH_BUFFER_BIT);
 
@@ -118,16 +139,30 @@ public:
       return depth_texture_id;
    }
 
+   void set_perspective_mat(glm::mat4x4 perspective_mat){
+      projection_matrix = perspective_mat;
+   }
+
 protected:
    GLuint depth_texture_id;
-   unsigned int texture_size;
+   unsigned int tex_width;
+   unsigned int tex_height;
    GLuint depth_fbo;
    GLfloat light_position[3];
    glm::mat4x4 projection_matrix;
    glm::mat4x4 view_matrix;
+   Camera *camera;
 
    glm::mat4x4 get_perspective_mat(){
-      return glm::perspective(3.1415f/1.6f, (float)texture_size/(float)texture_size, 1.0f, 1000.0f);
+
+      return projection_matrix;
+      // if(type == 0){ //FOR SHADOW MAPPING (compatibility)
+      //    return glm::perspective(3.1415f/1.6f, (float)tex_width/(float)tex_height, 1.0f, 1000.0f);
+      // }
+      // else{ //FOR same perspective as camera
+      //    return glm::perspective(3.1415f/2.0f, (float)tex_width/(float)tex_height, 0.1f, 1000.0f);
+      // }
+
    }
 
 };

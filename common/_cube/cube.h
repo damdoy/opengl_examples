@@ -80,6 +80,10 @@ public:
       glEnableVertexAttribArray(id_pos);
       glVertexAttribPointer(id_pos, 3, GL_FLOAT, GL_FALSE, 0, NULL);
 
+      color[0] = 1.0;
+      color[1] = 1.0;
+      color[2] = 1.0;
+
       glBindVertexArray(0);
    }
 
@@ -98,6 +102,12 @@ public:
       glBindVertexArray(0);
    }
 
+   void set_color(float r, float g, float b){
+      color[0] = r;
+      color[1] = g;
+      color[2] = b;
+   }
+
    void draw(){
       glUseProgram(_pid);
       glBindVertexArray(_vao);
@@ -105,8 +115,11 @@ public:
       glUniform3fv( glGetUniformLocation(_pid, "light_position"), 1, this->light_position);
       glUniform3fv( glGetUniformLocation(_pid, "camera_position"), 1, this->camera_position);
 
+      glUniform3fv( glGetUniformLocation(_pid, "shape_color"), 1, this->color);
       glUniform1ui( glGetUniformLocation(_pid, "shadow_mapping_effect"), this->shadow_mapping_effect);
-      glUniform1ui( glGetUniformLocation(_pid, "shadow_buffer_tex_size"), this->shadow_buffer_texture_size);
+      glUniform1ui( glGetUniformLocation(_pid, "shadow_buffer_tex_size"), this->shadow_buffer_texture_width); //width == height in this case
+      glUniform1ui( glGetUniformLocation(_pid, "window_width"), this->window_width);
+      glUniform1ui( glGetUniformLocation(_pid, "window_height"), this->window_height);
 
       if(has_shadow_buffer){
          glUniformMatrix4fv( glGetUniformLocation(_pid, "shadow_matrix"), 1, GL_FALSE, glm::value_ptr(this->shadow_matrix));
@@ -138,10 +151,10 @@ protected:
    GLuint _vao;
    GLuint _vbo_pos;
    GLuint _vbo_sur_norm;
-   GLuint _pid;
    unsigned int _num_indices;
    unsigned int _num_vertices;
 
+   float color[3];
 
    //generate real position from indexed ones (to do per surface normals)
    void generate_positions(GLfloat indexed_position[24], GLuint index[36], GLfloat position[36*3]){

@@ -33,6 +33,10 @@ public:
       return glm::lookAt(eye, center, up);
    }
 
+   glm::mat4x4 get_perspective_mat(){
+      return glm::perspective(3.1415f/2.0f, (float)win_width/(float)win_height, 0.1f, 1000.0f);
+   }
+
    virtual void input_handling(char){
 
    }
@@ -41,11 +45,19 @@ public:
 
    }
 
+   virtual void set_window_size(unsigned int win_width, unsigned int win_height){
+      this->win_width = win_width;
+      this->win_height = win_height;
+   }
+
 protected:
    //for the lookat functon
    glm::vec3 eye;
    glm::vec3 center;
    glm::vec3 up;
+
+   unsigned int win_width;
+   unsigned int win_height;
 };
 
 #endif
