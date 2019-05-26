@@ -10,8 +10,9 @@
 
 #include "../shader_helper.h"
 #include "../texture.h"
+#include "../drawable.h"
 
-class Plane{
+class Plane : public Drawable{
 public:
 
    void init(GLuint pid){
@@ -77,6 +78,11 @@ public:
       glUseProgram(0);
    }
 
+   void init(GLuint pid, GLuint vao){
+      this->_pid = pid;
+      this->_vao = vao;
+   }
+
    void set_texture(const Texture *tex){
       if(_tex != 0){
          //delete current texture
@@ -110,6 +116,11 @@ public:
 
       glUseProgram(0);
       glBindVertexArray(0);
+   }
+
+   void draw(){
+
+      draw(this->model_matrix, this->view_matrix, this->projection_matrix);
    }
 
    void cleanup(){

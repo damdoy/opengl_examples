@@ -13,6 +13,7 @@ Content of the repo:
 - LOD Terrain: Implementation of a perlin noise terrain with simple CPU LOD implementation (using quad tree), which is dynamically updated with camera position
 - Shadow mapping: Implementation of a dynamic shadow mapping using a depth buffer from the point of view of the light, smoothing techniques are applied on the shadow to make it less pixelated
 - Ambient occlusion: Deferred SSAO algorithm done in the shaders which give depth in a scene, a few different algorithms are implemented
+- Grass: Display 100k individual grass elements using instanced drawing and geometry shaders and make them move in the wind with a perlin noise
 
 ## How to build
 These examples are compiled on a Linux Mint 18.1
