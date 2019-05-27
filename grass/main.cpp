@@ -1,6 +1,3 @@
-/**
-Small triange test in opengl to test minimal functionalities
-*/
 #include <iostream>
 #include <fstream>
 #include <sstream>
@@ -67,7 +64,6 @@ float time_measured;
 unsigned int effect_select;
 
 int main(){
-   std::cout << "Hello there!" << std::endl;
    if( !glfwInit() ){
       std::cout << "Error to initialize GLFW" << std::endl;
       return -1;

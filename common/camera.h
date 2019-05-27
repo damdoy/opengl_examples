@@ -29,8 +29,20 @@ public:
       position[2] = eye.z;
    }
 
+   void get_direction(float direction[3]){
+      direction[0] = center.x-eye.x;
+      direction[1] = center.y-eye.y;
+      direction[2] = center.z-eye.z;
+   }
+
+
    glm::mat4x4 getMatrix(){
       return glm::lookAt(eye, center, up);
+   }
+
+   glm::mat4x4 get_reflection_matrix(float height){
+      //just return another lookat on the other side of the plane (only plane along y)
+      return glm::lookAt(glm::vec3(eye.x, -eye.y+height*2, eye.z), glm::vec3(center.x, -center.y+height*2, center.z), up);
    }
 
    glm::mat4x4 get_perspective_mat(){

@@ -15,6 +15,7 @@ public:
       shadow_mapping_effect = 0;
       this->window_width = 0;
       this->window_height = 0;
+      this->enabled = true;
    }
 
    virtual void set_model_matrix(glm::mat4x4 model){
@@ -39,6 +40,12 @@ public:
       this->camera_position[0] = camera_position[0];
       this->camera_position[1] = camera_position[1];
       this->camera_position[2] = camera_position[2];
+   }
+
+   virtual void set_camera_direction(GLfloat camera_direction[3]){
+      this->camera_direction[0] = camera_direction[0];
+      this->camera_direction[1] = camera_direction[1];
+      this->camera_direction[2] = camera_direction[2];
    }
 
    virtual void set_MVP_matrices(glm::mat4x4 model, glm::mat4x4 view, glm::mat4x4 projection){
@@ -83,6 +90,17 @@ public:
       return this->_pid;
    }
 
+   virtual void set_clip_coord(float x, float y, float z, float d){
+      this->clip_coord[0] = x;
+      this->clip_coord[1] = y;
+      this->clip_coord[2] = z;
+      this->clip_coord[3] = d;
+   }
+
+   virtual void set_enabled(bool enabled){
+      this->enabled = enabled;
+   }
+
    virtual void draw() = 0;
 
 protected:
@@ -97,9 +115,13 @@ protected:
 
    GLfloat light_position[3];
    GLfloat camera_position[3];
+   GLfloat camera_direction[3];
+   GLfloat clip_coord[4];
 
    bool has_shadow_buffer;
    GLuint _shadow_texture_id;
+
+   bool enabled;
 
    unsigned shadow_mapping_effect;
    unsigned window_width;

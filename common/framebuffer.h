@@ -1,8 +1,5 @@
 #pragma once
 
-//2x more samples
-//writes to multisample frimebuffer which will then be "blitted" to single framebuffer
-#define USING_MULTISAMPLE 1
 
 class Framebuffer{
 public:
@@ -12,26 +9,28 @@ public:
    ///--- Warning: overrides viewport!!
    void bind() {
       glViewport(0, 0, _width, _height);
-      #if USING_MULTISAMPLE
-      glBindFramebuffer(GL_FRAMEBUFFER, _fbo_multi);
-      #else
-      glBindFramebuffer(GL_FRAMEBUFFER, _fbo_single);
-      #endif
+      if(this->multisampled){
+         glBindFramebuffer(GL_FRAMEBUFFER, _fbo_multi);
+      }
+      else{
+         glBindFramebuffer(GL_FRAMEBUFFER, _fbo_single);
+      }
    }
 
    void unbind() {
-      #if USING_MULTISAMPLE
-      glBindFramebuffer(GL_READ_FRAMEBUFFER, _fbo_multi); // Make sure your multisampled FBO is the read framebuffer
-      glBindFramebuffer(GL_DRAW_FRAMEBUFFER, _fbo_single);   // Make sure no FBO is set as the draw framebuffer
-      glDrawBuffer(GL_BACK);
-      glBlitFramebuffer(0, 0, _width, _height, 0, 0, _width, _height, GL_COLOR_BUFFER_BIT, GL_NEAREST);
-      #endif
+      if(this->multisampled){
+         glBindFramebuffer(GL_READ_FRAMEBUFFER, _fbo_multi); // Make sure your multisampled FBO is the read framebuffer
+         glBindFramebuffer(GL_DRAW_FRAMEBUFFER, _fbo_single);   // Make sure no FBO is set as the draw framebuffer
+         glDrawBuffer(GL_BACK);
+         glBlitFramebuffer(0, 0, _width, _height, 0, 0, _width, _height, GL_COLOR_BUFFER_BIT, GL_NEAREST);
+      }
       glBindFramebuffer(GL_FRAMEBUFFER, 0);
    }
 
-   int init(int image_width, int image_height, bool use_interpolation = false) {
+   int init(int image_width, int image_height, bool multisampled = true ,bool use_interpolation = false) {
       this->_width = image_width;
       this->_height = image_height;
+      this->multisampled = multisampled;
 
       glGenFramebuffers(1, &_fbo_multi);
       glBindFramebuffer(GL_FRAMEBUFFER, _fbo_multi);
@@ -78,15 +77,15 @@ public:
 
       glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0 /*location = 0*/, GL_TEXTURE_2D, _color_tex_single, 0 /*level*/);
 
-      #if !USING_MULTISAMPLE
-      glGenRenderbuffers(1, &_depth_rb_single);
-      glBindRenderbuffer(GL_RENDERBUFFER, _depth_rb_single);
+      if(this->multisampled == false){
+         glGenRenderbuffers(1, &_depth_rb_single);
+         glBindRenderbuffer(GL_RENDERBUFFER, _depth_rb_single);
 
-      glRenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH_COMPONENT32, _width, _height);
-      glBindRenderbuffer(GL_RENDERBUFFER, 0);
+         glRenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH_COMPONENT32, _width, _height);
+         glBindRenderbuffer(GL_RENDERBUFFER, 0);
 
-      glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_RENDERBUFFER, _depth_rb_single);
-      #endif
+         glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_RENDERBUFFER, _depth_rb_single);
+      }
 
       if (glCheckFramebufferStatus(GL_FRAMEBUFFER) != GL_FRAMEBUFFER_COMPLETE)
          std::cerr << "!!!ERROR: Framebuffer not OK :(" << std::endl;
@@ -94,6 +93,10 @@ public:
 
       return _color_tex_single;
 
+   }
+
+   GLuint get_texture(){
+      return _color_tex_single;
    }
 
    void cleanup() {
@@ -107,7 +110,7 @@ public:
    }
 
 protected:
-   bool _init;
+   bool multisampled;
    int _width;
    int _height;
    GLuint _fbo_multi;

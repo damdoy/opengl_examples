@@ -116,6 +116,7 @@ public:
       glUniform3fv( glGetUniformLocation(_pid, "camera_position"), 1, this->camera_position);
 
       glUniform3fv( glGetUniformLocation(_pid, "shape_color"), 1, this->color);
+      glUniform4fv( glGetUniformLocation(_pid, "clip_coord"), 1, this->clip_coord);
       glUniform1ui( glGetUniformLocation(_pid, "shadow_mapping_effect"), this->shadow_mapping_effect);
       glUniform1ui( glGetUniformLocation(_pid, "shadow_buffer_tex_size"), this->shadow_buffer_texture_width); //width == height in this case
       glUniform1ui( glGetUniformLocation(_pid, "window_width"), this->window_width);
