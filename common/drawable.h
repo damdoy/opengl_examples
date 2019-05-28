@@ -101,6 +101,18 @@ public:
       this->enabled = enabled;
    }
 
+   virtual void set_sun_dir(float sun_dir[3]){
+      this->sun_dir[0] = sun_dir[0];
+      this->sun_dir[1] = sun_dir[1];
+      this->sun_dir[2] = sun_dir[2];
+   }
+
+   virtual void set_sun_col(float sun_col[3]){
+      this->sun_col[0] = sun_col[0];
+      this->sun_col[1] = sun_col[1];
+      this->sun_col[2] = sun_col[2];
+   }
+
    virtual void draw() = 0;
 
 protected:
@@ -117,6 +129,9 @@ protected:
    GLfloat camera_position[3];
    GLfloat camera_direction[3];
    GLfloat clip_coord[4];
+
+   GLfloat sun_dir[3];
+   GLfloat sun_col[3];
 
    bool has_shadow_buffer;
    GLuint _shadow_texture_id;

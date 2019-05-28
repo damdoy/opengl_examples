@@ -1,3 +1,6 @@
+#ifndef SPHERE_H
+#define SPHERE_H
+
 #include <cmath>
 
 #include <GL/glew.h>
@@ -101,7 +104,10 @@ public:
       glUniform3fv( glGetUniformLocation(_pid, "camera_position"), 1, this->camera_position);
       glUniform1ui( glGetUniformLocation(_pid, "lighting_mode"), 2);
       glUniform1ui( glGetUniformLocation(_pid, "activate_specular"), 1);
-      
+
+      glUniform3fv( glGetUniformLocation(_pid, "sun_dir"), 1, this->sun_dir);
+      glUniform3fv( glGetUniformLocation(_pid, "sun_col"), 1, this->sun_col);
+
       glUniform4fv( glGetUniformLocation(_pid, "clip_coord"), 1, this->clip_coord);
       glUniform1ui( glGetUniformLocation(_pid, "shadow_mapping_effect"), this->shadow_mapping_effect);
       glUniform1ui( glGetUniformLocation(_pid, "shadow_buffer_tex_size"), this->shadow_buffer_texture_width); //width=height in this case
@@ -134,7 +140,7 @@ public:
       glDeleteProgram(_pid);
    }
 
-private:
+protected:
    GLuint _vao;
    GLuint _vbo_pos;
    GLuint _vbo_idx;
@@ -393,3 +399,5 @@ private:
       }
    }
 };
+
+#endif

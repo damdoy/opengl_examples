@@ -122,6 +122,9 @@ public:
       glUniform1ui( glGetUniformLocation(_pid, "window_width"), this->window_width);
       glUniform1ui( glGetUniformLocation(_pid, "window_height"), this->window_height);
 
+      glUniform3fv( glGetUniformLocation(_pid, "sun_dir"), 1, this->sun_dir);
+      glUniform3fv( glGetUniformLocation(_pid, "sun_col"), 1, this->sun_col);
+
       if(has_shadow_buffer){
          glUniformMatrix4fv( glGetUniformLocation(_pid, "shadow_matrix"), 1, GL_FALSE, glm::value_ptr(this->shadow_matrix));
 

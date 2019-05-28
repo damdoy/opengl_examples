@@ -15,6 +15,7 @@ Content of the repo:
 - Ambient occlusion: Deferred SSAO algorithm done in the shaders which give depth in a scene, a few different algorithms are implemented
 - Grass: Display 100k individual grass elements using instanced drawing and geometry shaders and make them move in the wind with a perlin noise
 - Water: Reflects objects on a water surface with waves distorting the reflexion
+- Sky: Displays a moving sun on a sky-sphere
 
 ## How to build
 These examples are compiled on a Linux Mint 18.1
