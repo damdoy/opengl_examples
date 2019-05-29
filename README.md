@@ -1,5 +1,5 @@
 # OpenGL examples
-This is a list of examples done a few years ago after a computer graphic course to better understand opengl and apply some of the effects existing.
+This is a list of examples done a few years ago after taking a computer graphic course to better understand opengl and apply some of the effects existing.
 
 Content of the repo:
 
@@ -18,8 +18,12 @@ Content of the repo:
 - Sky: Displays a moving sun on a sky-sphere
 
 ## How to build
-These examples are compiled on a Linux Mint 18.1
+All these examples are made to run on a moderately powerful laptop (Intel HD Graphics 620 Intel core i7-7500U 8GB Ram)
 
-Libraries needed are : glfw2, glew 1.13 devIL 1.7.8
+There were compiled on a Linux Mint 18.1, the needed libraries are the following:
+
+- glfw2 2.7.9
+- glew 1.13.0
+- devIl 1.7.8
 
 Create a `build` folder in the example you want to build, then from the `build` folder, `cmake ..` to populate it and `make` to build the example
