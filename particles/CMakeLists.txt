@@ -1,6 +1,6 @@
 cmake_minimum_required(VERSION 2.8)
 
-set(PROJECT_NAME water)
+set(PROJECT_NAME particles)
 
 project(${PROJECT_NAME})
 
