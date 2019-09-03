@@ -34,6 +34,10 @@ public:
       this->noise_levels = noise_level;
    }
 
+   void set_noise_function(Noise_Function_select noise_func){
+      noise_func_select = noise_func;
+   }
+
    std::vector<std::vector<float> > get_2D_noise(unsigned int size_2d_x, unsigned int size_2d_y, float min_x, float max_x, float min_y, float max_y){
       std::vector<std::vector<float> > ret_vec;
 

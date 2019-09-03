@@ -35,6 +35,14 @@ public:
       this->rotate(glm::vec3(x, y, z), angle);
    }
 
+   void mult(Transform t){
+      this->transform_mat *= t.get_matrix();
+   }
+
+   void mult(glm::mat4 m){
+      this->transform_mat *= m;
+   }
+
    glm::mat4 get_matrix(){
       return transform_mat;
    }

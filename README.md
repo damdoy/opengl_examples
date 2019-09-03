@@ -17,6 +17,7 @@ Content of the repo:
 - Water: Reflects objects on a water surface with waves distorting the reflexion
 - Sky: Displays a moving sun on a sky-sphere
 - Particles: A simple particles system using instanced drawing
+- Tree: Procedural generation of realistic trees using L-System
 
 ## How to build
 All these examples are made to run on a moderately powerful laptop (Intel HD Graphics 620 Intel core i7-7500U 8GB Ram)
