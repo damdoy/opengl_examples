@@ -12,7 +12,9 @@ class Tree : public Drawable{
 public:
 
    virtual ~Tree(){
-      //TODO, clean destructor
+      glDeleteBuffers(1, &_vbo_leaves_transf);
+      glDeleteBuffers(1, &_vbo_trunk_transf);
+      glDeleteBuffers(1, &_vbo_leaves_base_pos);
    }
 
    void init(GLuint _pid_trunk, GLuint _pid_ileaves){
@@ -65,9 +67,8 @@ public:
       ////////////////trunk
       {
          glBindVertexArray(_vao_trunk);
-         GLuint _vbo_transf;
-         glGenBuffers(1, &_vbo_transf);
-         glBindBuffer(GL_ARRAY_BUFFER, _vbo_transf);
+         glGenBuffers(1, &_vbo_trunk_transf);
+         glBindBuffer(GL_ARRAY_BUFFER, _vbo_trunk_transf);
 
          glm::mat4 *matrices_array = new glm::mat4x4[mat_vector_trunks.size()];
 
@@ -111,9 +112,8 @@ public:
       {
          glBindVertexArray(_vao_ileaves);
 
-         GLuint _vbo_transf;
-         glGenBuffers(1, &_vbo_transf);
-         glBindBuffer(GL_ARRAY_BUFFER, _vbo_transf);
+         glGenBuffers(1, &_vbo_leaves_transf);
+         glBindBuffer(GL_ARRAY_BUFFER, _vbo_leaves_transf);
 
          glm::mat4x4 *matrices_array = new glm::mat4x4[mat_vector_ileaves.size()];
 
@@ -146,9 +146,8 @@ public:
          glVertexAttribDivisor(model_attrib_0+3, 1);
 
          //draw the raw position of the leaves
-         GLuint _vbo_base_pos;
-         glGenBuffers(1, &_vbo_base_pos);
-         glBindBuffer(GL_ARRAY_BUFFER, _vbo_base_pos);
+         glGenBuffers(1, &_vbo_leaves_base_pos);
+         glBindBuffer(GL_ARRAY_BUFFER, _vbo_leaves_base_pos);
 
          glm::vec3 *pos_array = new glm::vec3[pos_vector_ileaves.size()];
 
@@ -264,6 +263,10 @@ protected:
 
    GLuint _pid_trunk;
    GLuint _vao_trunk;
+
+   GLuint _vbo_leaves_transf;
+   GLuint _vbo_trunk_transf;
+   GLuint _vbo_leaves_base_pos;
 
    GLuint _pid_ileaves;
    GLuint _vao_ileaves;

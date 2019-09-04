@@ -6,6 +6,14 @@
 
 class Individual_leaves : public Drawable{
 public:
+
+   virtual ~Individual_leaves(){
+      glDeleteBuffers(1, &_vbo);
+      glDeleteBuffers(1, &_vbo_sur_norm);
+      glDeleteBuffers(1, &_vbo_idx);
+      glDeleteBuffers(1, &_vbo_tex);
+   }
+
    void init(){
       GLuint pid = load_shaders("leaves_individual_vshader.glsl", "leaves_individual_fshader.glsl");
       srand(time(0));

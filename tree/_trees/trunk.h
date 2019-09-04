@@ -9,6 +9,10 @@ class Trunk : public Drawable{
 public:
 
    virtual ~Trunk(){
+      glDeleteBuffers(1, &_vbo_pos);
+      glDeleteBuffers(1, &_vbo_sur_norm);
+      glDeleteBuffers(1, &_vbo_idx);
+      glDeleteBuffers(1, &_vbo_tex);
       delete[] positions;
    }
 
@@ -186,7 +190,7 @@ public:
       glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, _vbo_idx);
       glBufferData(GL_ELEMENT_ARRAY_BUFFER, nb_indices*sizeof(GLuint), indices, GL_STATIC_DRAW);
 
-      GLuint _vbo_tex;
+
       glGenBuffers(1, &_vbo_tex);
       glBindBuffer(GL_ARRAY_BUFFER, _vbo_tex);
       glBufferData(GL_ARRAY_BUFFER, nb_text_coord*sizeof(GLfloat), text_coord, GL_STATIC_DRAW);
@@ -437,6 +441,7 @@ protected:
    GLuint _vbo_pos;
    GLuint _vbo_sur_norm;
    GLuint _vbo_idx;
+   GLuint _vbo_tex;
 
    std::vector<Transform> transf;
    std::vector<Transform> end_point_matrices; //points where the twigs/trunks stops, to add leaves
