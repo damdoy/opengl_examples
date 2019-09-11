@@ -15,6 +15,8 @@ public:
       glDeleteBuffers(1, &_vbo_leaves_transf);
       glDeleteBuffers(1, &_vbo_trunk_transf);
       glDeleteBuffers(1, &_vbo_leaves_base_pos);
+      glDeleteVertexArrays(1, &_vao_ileaves);
+      glDeleteVertexArrays(1, &_vao_trunk);
    }
 
    void init(GLuint _pid_trunk, GLuint _pid_ileaves){

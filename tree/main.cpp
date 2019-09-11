@@ -45,6 +45,9 @@ Transform cube_base_transf;
 Transform tree_transf;
 glm::mat4x4 projection_mat;
 
+uint trunk_pid;
+uint leaves_pid;
+
 std::vector<Drawable*> lst_drawable;
 
 GLfloat light_position[3];
@@ -119,7 +122,7 @@ int main(){
          delete tree;
          lst_drawable.pop_back();
          tree = new Tree;
-         tree->init();
+         tree->init(trunk_pid, leaves_pid);
          tree->load();
          lst_drawable.push_back(tree);
       }
@@ -176,8 +179,11 @@ void init(){
    tree_transf.translate(0.0f, 0.5f, 0.0f);
    tree_transf.scale(5.0f, 5.0f, 5.0f);
 
+   trunk_pid = load_shaders("trunk_vshader.glsl", "trunk_fshader.glsl");
+   leaves_pid = load_shaders("leaves_individual_vshader.glsl", "leaves_individual_fshader.glsl");
+
    tree = new Tree;
-   tree->init();
+   tree->init(trunk_pid, leaves_pid);
    tree->load();
    lst_drawable.push_back(tree);
 
