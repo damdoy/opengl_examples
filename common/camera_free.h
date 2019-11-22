@@ -9,6 +9,7 @@
 class Camera_free : public Camera{
 public:
    Camera_free(){
+      speed = 0.1f;
    }
 
    virtual void lookAt(glm::vec3 eye, glm::vec3 center, glm::vec3 up){
@@ -43,10 +44,14 @@ public:
       lookAt(glm::vec3(eyeX, eyeY, eyeZ), glm::vec3(centerX, centerY, centerZ), glm::vec3(upX, upY, upZ));
    }
 
+   void set_speed(float speed){
+      this->speed = speed;
+   }
+
    virtual void input_handling(char key){
 
       glm::vec3 direction;
-      glm::vec3 speed_factor = glm::vec3(0.10f);
+      glm::vec3 speed_factor = glm::vec3(speed);
 
       direction = center - eye;
       direction = normalize(direction);
@@ -100,6 +105,8 @@ public:
 protected:
    float angle_up;
    float angle_side;
+
+   float speed;
 
    virtual void change_cam_orientation(){
 

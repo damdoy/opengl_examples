@@ -25,6 +25,8 @@ public:
       _pid = shader_pid;
       if(_pid == 0) exit(-1);
 
+      inverted = false;
+
       glUseProgram(_pid);
 
       glGenVertexArrays(1, &_vao);
@@ -80,6 +82,10 @@ public:
       glBindVertexArray(0);
    }
 
+   void set_invert(bool inverted){
+      this->inverted = inverted;
+   }
+
 
    //minimalist draw, for simpler examples
    void draw(glm::mat4x4 model, glm::mat4x4 view, glm::mat4x4 projection){
@@ -90,7 +96,13 @@ public:
       glUniformMatrix4fv( glGetUniformLocation(_pid, "view"), 1, GL_FALSE, glm::value_ptr(view));
       glUniformMatrix4fv( glGetUniformLocation(_pid, "projection"), 1, GL_FALSE, glm::value_ptr(projection));
 
+      if(this->inverted){
+         glFrontFace(GL_CW);
+      }
+
       glDrawArrays(GL_TRIANGLES, 0, _num_vertices);
+
+      glFrontFace(GL_CCW);
 
       glUseProgram(0);
       glBindVertexArray(0);
@@ -148,6 +160,7 @@ protected:
    GLuint _vbo_vert_norm;
    GLuint _pid;
    int _num_vertices;
+   bool inverted;
 
    // this defines the precision of the sphere, in term of vertical lines and horizontal
    // in order to have something that ressembles a sphere, a minimum value is defined
