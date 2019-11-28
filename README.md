@@ -18,6 +18,7 @@ Content of the repo:
 - Sky: Displays a moving sun on a sky-sphere
 - Particles: A simple particles system using instanced drawing
 - Tree: Procedural generation of realistic trees using L-System
+- Atmospheric scattering: implemented in a similar way as in the [GPU Gems 2 book](https://developer.nvidia.com/gpugems/GPUGems2/gpugems2_chapter16.html)
 
 ## How to build
 All these examples are made to run on a moderately powerful laptop (Intel HD Graphics 620 Intel core i7-7500U 8GB Ram)
