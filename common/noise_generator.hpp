@@ -23,11 +23,11 @@ public:
    }
 
    void setup(uint noise_start_seg, uint noise_levels, float noise_start_factor, float noise_factor, Noise_Function_select noise){
-      noise_start_seg = noise_start_seg;
-      noise_levels = noise_levels;
-      noise_start_factor = noise_start_factor;
-      noise_factor = noise_factor;
-      noise_func_select = noise;
+      this->noise_start_seg = noise_start_seg;
+      this->noise_levels = noise_levels;
+      this->noise_start_factor = noise_start_factor;
+      this->noise_factor = noise_factor;
+      this->noise_func_select = noise;
    }
 
    void set_noise_level(unsigned int noise_level){
@@ -40,8 +40,6 @@ public:
 
    std::vector<std::vector<float> > get_2D_noise(unsigned int size_2d_x, unsigned int size_2d_y, float min_x, float max_x, float min_y, float max_y){
       std::vector<std::vector<float> > ret_vec;
-
-      float (Noise_generator:: *func)(float, float) = &Noise_generator::function_recurs_noise;
 
       ret_vec.resize(size_2d_y);
       for(uint i = 0; i < size_2d_y; i++){
@@ -58,16 +56,14 @@ public:
             relative_y = (1.0f-relative_y)*min_y+relative_y*max_y;
 
             //unsigned int cur_pos = (j*sub_x+i)*3;
-            ret_vec[i][j] = (*this.*func)(relative_x, relative_y);
+            ret_vec[i][j] = function_recurs_noise(relative_x, relative_y);
          }
       }
       return ret_vec;
    }
 
    float get_noise_val(float pos_x, float pos_y){
-      float (Noise_generator:: *func)(float, float) = &Noise_generator::function_recurs_noise;
-
-      return (*this.*func)(pos_x, pos_y);
+      return function_recurs_noise(pos_x, pos_y);
    }
 
    // Noise_generator& operator=(const Noise_generator& input){
