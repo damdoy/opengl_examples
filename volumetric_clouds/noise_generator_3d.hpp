@@ -90,9 +90,9 @@ protected:
       //    case NOISE_SELECT_PERLIN:
       //       val_ret = (2.0f*function_frac_perlin(x, y, segmentation)-1.0f)*amplitude+val_ret;
       //       break;
-         // case NOISE_SELECT_VORONOI:
-         //    val_ret = (2.0f*function_frac_voronoi(x, y, segmentation)-1.0f)*amplitude+val_ret;
-         //    break;
+         case NOISE_SELECT_VORONOI:
+            val_ret = (2.0f*function_frac_voronoi(x, y, z, segmentation)-1.0f)*amplitude+val_ret;
+            break;
          default:
             val_ret = 1;
          }
@@ -169,6 +169,54 @@ protected:
       float lin = (1.0f-frac_z)*lin_0 + (frac_z)*lin_1;
 
       return lin;
+   }
+
+   //tentative voronoi for cloud generation, not as great as I thought
+   float function_frac_voronoi(float x, float y, float z, unsigned int segmentation){
+      float smallest_distance = 10000000000000; //safe assumption
+
+      float square_size = 1.0f/(segmentation);
+
+      int counter = 0;
+
+      //for each cube around the current cube, find voronoi centre
+      for (int i = -1; i < 2; i++) {
+         for (int j = -1; j < 2; j++) {
+            for (int k = -1; k < 2; k++) {
+               float centre_pos[3];
+               find_voronoi_centre_in_square(x+i*square_size, y+j*square_size, z+k*square_size, square_size, centre_pos);
+
+               float distance = sqrt(pow(x-centre_pos[0], 2)+pow(y-centre_pos[1], 2)+pow(z-centre_pos[2], 2));
+               if(distance < smallest_distance){
+                  smallest_distance = distance;
+               }
+
+               counter++;
+            }
+         }
+      }
+
+      return (smallest_distance/square_size);
+   }
+
+   //from top left value in square, find voronoi centre
+   void find_voronoi_centre_in_square(float x_corr, float y_corr, float z_corr, float square_size, float centre_pos[3]){
+      float ret_val[8];
+      find_rand_vals_3d(x_corr, y_corr, z_corr, square_size, ret_val);
+
+      //ret_val[0] = cube top right random value
+      float pos_x = ret_val[0];
+      //get a random y pos from x, should *feel* random enough
+      float pos_y = rand(ret_val[0]*MAX_RAND)/(float)MAX_RAND;
+      float pos_z = rand(pos_y*MAX_RAND)/(float)MAX_RAND;
+
+      float nearest_square_x = x_corr-fmod(x_corr, square_size);
+      float nearest_square_y = y_corr-fmod(y_corr, square_size);
+      float nearest_square_z = z_corr-fmod(z_corr, square_size);
+
+      centre_pos[0] = nearest_square_x+pos_x*square_size;
+      centre_pos[1] = nearest_square_y+pos_y*square_size;
+      centre_pos[2] = nearest_square_z+pos_z*square_size;
    }
 
    //find random values for corners of the square that are consistent and repeteable

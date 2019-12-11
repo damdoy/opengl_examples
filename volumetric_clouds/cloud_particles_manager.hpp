@@ -11,7 +11,7 @@
 class Cloud_particles_manager : public Drawable{
 public:
    Cloud_particles_manager(){
-      clouds_amount_change = false;
+      clouds_amount_change = true;
    }
 
    ~Cloud_particles_manager(){
@@ -31,6 +31,17 @@ public:
 
       glGenVertexArrays(1, &vao_particles);
       glBindVertexArray(vao_particles);
+
+      //white clouds with dark shadows
+      light_colour[0] = 1.0f;
+      light_colour[1] = 1.0f;
+      light_colour[2] = 1.0f;
+
+      shadow_colour[0] = 0.0f;
+      shadow_colour[1] = 0.0f;
+      shadow_colour[2] = 0.0f;
+
+      shadow_factor = 0.3f;
 
       //index
       // 0 3
@@ -160,7 +171,7 @@ public:
 
    }
 
-   //must be called every draw loop
+   //TODO must be called every draw loop
    void set_time(float time){
       this->current_time = time;
    }
@@ -182,9 +193,9 @@ public:
       this->noise_size_3d = noise_size;
 
       // less height resolution for the noise
-      float noise_bound_x = 2.5;
-      float noise_bound_y = 1.0;
-      float noise_bound_z = 2.5;
+      float noise_bound_x = 3.5;
+      float noise_bound_y = 2.0;
+      float noise_bound_z = 3.5;
       noise_3d = noise_gen->get_3D_noise(noise_size_3d, noise_size_3d, noise_size_3d, 0, noise_bound_x, 0, noise_bound_y, 0, noise_bound_z);
 
       create_particles();
@@ -219,6 +230,22 @@ public:
       delete[] particles_positions;
    }
 
+   void set_light_colour(float r, float g, float b){
+      light_colour[0] = r;
+      light_colour[1] = g;
+      light_colour[2] = b;
+   }
+
+   void set_shadow_colour(float r, float g, float b){
+      shadow_colour[0] = r;
+      shadow_colour[0] = g;
+      shadow_colour[0] = b;
+   }
+
+   //fact = 0, no shadow, at 1 very strong shadows (default 0.3)
+   void set_shadow_factor(float fact){
+      shadow_factor = fact;
+   }
 
    void draw(){
 
@@ -246,6 +273,9 @@ public:
 
       glUseProgram(_pid);
       glBindVertexArray(vao_particles);
+
+      glUniform3fv( glGetUniformLocation(_pid, "light_colour"), 1, this->light_colour);
+      glUniform3fv( glGetUniformLocation(_pid, "shadow_colour"), 1, this->shadow_colour);
 
       //these uniform were called for every plane
       glUniform3fv( glGetUniformLocation(_pid, "light_position"), 1, this->light_position);
@@ -301,6 +331,10 @@ protected:
    std::vector<std::vector<std::vector<float> > > noise_3d;
    std::vector<std::vector<float> > noise_2d;
    float *noise_raw;
+
+   float light_colour[3];
+   float shadow_colour[3];
+   float shadow_factor;
 
    uint nb_particles;
    uint nb_particles_to_draw;
@@ -371,12 +405,14 @@ protected:
 
                *it->active = 1;
 
-               /////////////////////OBSCURITY
+               ///OBSCURITY as ray casting integral from the particle to the sun
+               ///if ray is in clouds, increase the obscurity value
                float obscurity = 0;
-               uint total_incr = 10;
+               uint total_incr = 20; //more incr = better shadow granularity
                //move along the sun vector
                for (size_t increment = 0; increment < total_incr; increment++) {
 
+                  //cast ray toward the sun, incrementally
                   float new_pos_x = pos_x+0.5 + sun_dir[0]*(float(increment)/total_incr);
                   float new_pos_y = pos_y+0.5 + sun_dir[1]*(float(increment)/total_incr);
                   float new_pos_z = pos_z+0.5 + sun_dir[2]*(float(increment)/total_incr);
@@ -394,15 +430,17 @@ protected:
 
                   float noise_val = get_noise_adjusted(new_pos_x, new_pos_y, new_pos_z);
 
+                  //if ray increment intersect cloud, increase obscurity
                   if(noise_val+clouds_amount > 0.0f){
-                     obscurity += 0.03;
+                     obscurity += 1;
                   }
 
                }
-               *it->colour = 1.0f-obscurity;
+               //1 = clear 0 = completely in shadows
+               *it->colour = 1.0f-shadow_factor*(obscurity/(float)total_incr);
 
                /////////////////////USE NOISE as colour
-               // *it->colour = 1.0f-noise_val/5.0f;
+               // *it->colour = 1.0f-(noise_val+0.5);
 
             }
             else{
@@ -427,9 +465,10 @@ protected:
    void create_particles(){
 
       srand(0);
-      uint nb_particles_side = pow(nb_particles, 1.0/3.0);
+      uint nb_particles_side = pow(nb_particles, 1.0/3.0); //cube
       uint count = 0;
 
+      //more resolution on the x-z plane than the height (y)
       uint nb_particles_side_x = nb_particles_side*1.82;
       uint nb_particles_side_y = nb_particles_side*0.3;
       uint nb_particles_side_z = nb_particles_side*1.82;
@@ -441,8 +480,6 @@ protected:
                float pos_x = i*1.0/(nb_particles_side_x);
                float pos_y = j*1.0/(nb_particles_side_y);
                float pos_z = k*1.0/(nb_particles_side_z);
-
-               float noise_val = get_noise_adjusted(pos_x, pos_y, pos_z);
 
                pos_x -= 0.50+0.02*(rand()/float(RAND_MAX)-1);
                pos_y -= 0.50+0.02*(rand()/float(RAND_MAX)-1);
@@ -458,52 +495,8 @@ protected:
                lst_particles[count].position[2] = pos_z;
                *lst_particles[count].active = 0;
                *lst_particles[count].random = rand()/float(RAND_MAX);
-               // *lst_particles[count].random = 0.5;
+               // *lst_particles[count].random = 0.5; //deterministic
 
-               glm::vec4 particle_pos_transf = glm::vec4(pos_x, pos_y, pos_z, 1.0);
-               particle_pos_transf = model_matrix*particle_pos_transf;
-               float distance_to_cam = sqrt(pow(particle_pos_transf[0]-camera_position[0], 2)+pow(particle_pos_transf[1]-camera_position[1], 2)+pow(particle_pos_transf[2]-camera_position[2], 2));
-               lst_particles[count].dist_to_cam = distance_to_cam;
-
-               if(noise_val+clouds_amount > 0.0f){
-
-                  *lst_particles[count].active = 1;
-
-                  /////////////////////OBSCURITY
-                  float obscurity = 0;
-                  uint total_incr = 10;
-                  //move along the sun vector
-                  for (size_t increment = 0; increment < total_incr; increment++) {
-                     // float increment = (up-j)*(pos_y+0.5)*(noise_size_3d-1)*1.0/(nb_particles_side_y);
-
-                     float new_pos_x = pos_x+0.5 + sun_dir[0]*(float(increment)/total_incr);
-                     float new_pos_y = pos_y+0.5 + sun_dir[1]*(float(increment)/total_incr);
-                     float new_pos_z = pos_z+0.5 + sun_dir[2]*(float(increment)/total_incr);
-
-
-                     if(new_pos_x < 0 || new_pos_x > 1){
-                        continue;
-                     }
-                     if(new_pos_y < 0 || new_pos_y > 1){
-                        continue;
-                     }
-                     if(new_pos_y < 0 || new_pos_y > 1){
-                        continue;
-                     }
-
-                     float noise_val = get_noise_adjusted(new_pos_x, new_pos_y, new_pos_z);
-
-                     if(noise_val+clouds_amount > 0.0f){
-                        obscurity += 0.03;
-                     }
-
-                  }
-                  *lst_particles[count].colour = 1.0f-obscurity;
-
-                  /////////////////////USE NOISE
-                  // *lst_particles[count].colour = 1.0f-noise_val/5.0f;
-
-               }
                count++;
 
             }
@@ -512,7 +505,6 @@ protected:
 
       nb_particles_to_draw = count;
       printf("will draw %d particles\n", nb_particles_to_draw);
-      // sort_particles(nb_particles_to_draw);
    }
 
    void upgrade_particles(){
@@ -528,11 +520,12 @@ protected:
 
       float noise_val = get_noise_lerp_3d(pos_x_size, pos_y_size, pos_z_size);
 
+      //avoid abrupt change of clouds val at top and bottom
       if(pos_y < 0.3){
-         noise_val -= 1.0f-pos_y/0.3;
+         noise_val -= 1.0-(pos_y/0.3);
       }
       if(pos_y > 0.7){
-         noise_val -= 1.0f-(1.0f-pos_y)/0.3;
+         noise_val -= 1.0-((1.0f-pos_y)/0.3);
       }
 
       return noise_val;

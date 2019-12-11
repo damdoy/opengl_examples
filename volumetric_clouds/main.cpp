@@ -28,6 +28,8 @@
 
 #include "cloud_particles_manager.hpp"
 
+#define TOTAL_NUMBER_PARTICLES 80000
+
 void init();
 void display();
 void cleanup();
@@ -65,13 +67,10 @@ Transform cloud_manager_transf;
 float cloud_amount;
 const float cloud_amount_delta = 0.01f;
 
-GLfloat light_position[3];
-unsigned int light_mode_selected;
 GLfloat sun_dir[3];
 GLfloat sun_col[3];
 GLfloat camera_position[3];
 GLfloat camera_direction[3];
-GLuint light_mode = 0;
 
 const int win_width = 1280;
 const int win_height = 720;
@@ -83,11 +82,12 @@ float time_measured;
 
 unsigned int effect_select;
 
-void wind_func(float pos[3], float ret[3], float time){
-   ret[0] = 1;
-   ret[1] = 0;
-   ret[2] = 0;
-}
+//TODO wind function
+// void wind_func(float pos[3], float ret[3], float time){
+//    ret[0] = 1;
+//    ret[1] = 0;
+//    ret[2] = 0;
+// }
 
 int main(){
    if( !glfwInit() ){
@@ -151,6 +151,33 @@ int main(){
             cloud_amount += cloud_amount_delta;
       }
 
+      if(glfwGetKey('X') == GLFW_PRESS){ //day
+         cloud_manager.set_light_colour(1.0, 1.0, 1.0);
+         cloud_manager.set_shadow_colour(0.0, 0.0, 0.0);
+         cloud_manager.set_shadow_factor(0.4f);
+
+         glClearColor(0.4, 0.7, 0.9, 1.0); //sky
+
+         sun_dir[0] = 0;
+         sun_dir[1] = 1;
+         sun_dir[2] = 0;
+         cloud_amount += 0.001f; //will force a cloud recalculation
+      }
+
+      if(glfwGetKey('C') == GLFW_PRESS){ //evening
+         cloud_manager.set_light_colour(0.9, 0.6, 0.3);
+         cloud_manager.set_shadow_colour(0.1, 0.2, 0.3);
+         cloud_manager.set_shadow_factor(0.7f);
+
+         glClearColor(0.6, 0.6, 0.3, 1.0); //sky
+
+         //sun a bit under the horizon (simulates sunset)
+         sun_dir[0] = 5/sqrt(26);
+         sun_dir[1] = -1/sqrt(26);
+         sun_dir[2] = 0;
+         cloud_amount += 0.001f; //will force a cloud recalculation
+      }
+
       display();
       glfwSwapBuffers();
    }
@@ -165,7 +192,7 @@ void init(){
    time_measured = 0.0f;
    effect_select = 0;
 
-   glClearColor(0.3, 0.6, 1.0, 1.0); //sky
+   glClearColor(0.4, 0.7, 0.9, 1.0); //sky
 
    ilInit();
 
@@ -180,12 +207,6 @@ void init(){
 
    glViewport(0,0,win_width,win_height);
    projection_mat = glm::perspective(3.1415f/2.0f, (float)win_width/(float)win_height, 0.1f, 1000.0f);
-
-   light_position[0] = 0.0; //x
-   light_position[1] = 0.0; //up
-   light_position[2] = 0.0; //z
-
-   light_mode_selected = 3;
 
    GLuint cube_pid = load_shaders("cube_vshader.glsl", "cube_fshader.glsl");
 
@@ -230,21 +251,24 @@ void init(){
    }
 
    GLuint pid_cloud_particle = load_shaders("cloud_particles_vshader.glsl", "cloud_particles_fshader.glsl");
-   cloud_manager.init(40000, pid_cloud_particle);
+   cloud_manager.init(TOTAL_NUMBER_PARTICLES, pid_cloud_particle);
 
    cloud_amount = 0.5f;
 
-   //must be set befor the 3d_noise gen for the cloud manager
-   sun_dir[0] = 1/sqrt(2);
-   sun_dir[1] = 1/sqrt(2);
-   sun_dir[2] = 0;
-   // sun_dir[0] = 0;
-   // sun_dir[1] = 1;
+   cloud_manager.set_light_colour(1.0, 1.0, 1.0);
+   cloud_manager.set_shadow_colour(0.0, 0.0, 0.0);
+   cloud_manager.set_shadow_factor(0.4f);
+
+   // sun_dir[0] = 1/sqrt(2);
+   // sun_dir[1] = 1/sqrt(2);
    // sun_dir[2] = 0;
+   sun_dir[0] = 0;
+   sun_dir[1] = 1;
+   sun_dir[2] = 0;
 
    cloud_manager.set_sun_dir(sun_dir);
 
-   noise_gen_3d.setup(4, 2, 0.7f, 0.4f, NOISE_SELECT_EASE);
+   noise_gen_3d.setup(2, 2, 0.7f, 0.4f, NOISE_SELECT_EASE);
    cloud_manager.set_3d_noise_generator(&noise_gen_3d, 64);
 
    noise_gen_2d.setup(4, 4, 0.7f, 0.4f, NOISE_SELECT_PERLIN);
@@ -255,8 +279,9 @@ void init(){
 
    lst_drawable.push_back(&cloud_manager);
 
-   cloud_manager_transf.translate(0.0f, 64.0f, 0.0f);
-   cloud_manager_transf.scale(400.0f, 60.0f, 400.0f);
+   //clouds way larger than tall
+   cloud_manager_transf.translate(0.0f, 128.0f, 0.0f);
+   cloud_manager_transf.scale(600.0f, 150.0f, 600.0f);
 
    //framebuffers
    framebuffer = new Framebuffer();
@@ -304,7 +329,6 @@ void display(){
 
    for (size_t i = 0; i < lst_drawable.size(); i++) {
 
-      lst_drawable[i]->set_light_pos(light_position);
       lst_drawable[i]->set_sun_dir(sun_dir);
       lst_drawable[i]->set_sun_col(sun_col);
       lst_drawable[i]->set_camera_pos(camera_position);
@@ -331,27 +355,6 @@ void display(){
    glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
 
    quad_screen.draw(effect_select);
-
-   if(light_mode_selected == 0){
-      light_position[0] = 10;
-      light_position[1] = 15;
-      light_position[2] = -10;
-   }
-   else if(light_mode_selected == 1){
-      light_position[0] = 16.0*cos(glfwGetTime()/2);
-      light_position[1] = 8;
-      light_position[2] = 16.0*sin(glfwGetTime()/2);
-   }
-   else if(light_mode_selected == 2){
-      light_position[0] = 30;
-      light_position[1] = 30;
-      light_position[2] = 0;
-   }
-   else if(light_mode_selected == 3){
-      light_position[0] = 30;
-      light_position[1] = 30;
-      light_position[2] = 30;
-   }
 }
 
 void cleanup(){

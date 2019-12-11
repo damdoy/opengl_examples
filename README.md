@@ -1,5 +1,9 @@
 # OpenGL examples
-This is a list of examples done a few years ago after taking a computer graphic course to better understand opengl and apply some of the effects existing.
+
+<img src="screenshots/grass_1.png" width="200"> <img src="screenshots/shadow_mapping_2.png" width="200"> <img src="screenshots/water_1.png" width="200"> <img src="screenshots/tree_2.png" width="200"> <img src="screenshots/clouds_1.png" width="300"> <img src="screenshots/lod_terrain_2.png" width="300">
+
+
+This is a list of examples done a few years ago after taking a computer graphic course to better understand opengl and apply some of the techniques read in the litterature.
 
 Content of the repo:
 
@@ -19,6 +23,7 @@ Content of the repo:
 - Particles: A simple particles system using instanced drawing
 - Tree: Procedural generation of realistic trees using L-System
 - Atmospheric scattering: implemented in a similar way as in the [GPU Gems 2 book](https://developer.nvidia.com/gpugems/GPUGems2/gpugems2_chapter16.html)
+- Volumetric clouds: using combination of 3d and 2d noises and particles
 
 ## How to build
 All these examples are made to run on a moderately powerful laptop (Intel HD Graphics 620 Intel core i7-7500U 8GB Ram)

@@ -4,6 +4,9 @@ uniform mat4 model;
 uniform mat4 view;
 uniform mat4 projection;
 
+uniform vec3 light_colour;
+uniform vec3 shadow_colour;
+
 uniform vec3 light_position;
 uniform sampler2D tex_noise_2d;
 
@@ -34,6 +37,10 @@ void main(){
 
    //alpha transparency from a noise texture, at random position
    float alpha = (texture(tex_noise_2d, (frag_uv)*0.25+random*0.75).r+0.5)*(1-pow(dist_to_centre,2));
+   // float alpha = 1;
 
-   color = vec4(vec3(frag_colour,frag_colour,frag_colour), alpha);
+   //if frag colour == 1 will take light_colour
+   vec3 final_rgb = mix(shadow_colour, light_colour, frag_colour);
+
+   color = vec4(final_rgb, alpha);
 }
