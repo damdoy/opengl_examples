@@ -13,8 +13,9 @@
 #include "../drawable.h"
 
 class Plane : public Drawable{
+protected:
+   static const int NB_COMPONENTS_VTEXCOORD = 8;
 public:
-
    void init(GLuint pid){
       _pid = pid;
       if(_pid == 0) exit(-1);
@@ -48,11 +49,11 @@ public:
       glEnableVertexAttribArray(vpoint_id);
       glVertexAttribPointer(vpoint_id, 3, GL_FLOAT, GL_FALSE, 0, NULL);
 
-      //texture coord definition
-      const GLfloat vtexcoord[] = { /*V1*/ 0.0f, 0.0f,
-                                    /*V2*/ 1.0f, 0.0f,
-                                    /*V3*/ 1.0f, 1.0f,
-                                    /*V4*/ 0.0f, 1.0f};
+      //texture will cover the whole plane
+      vtexcoord[0] = 0.0f, vtexcoord[1] = 0.0f;
+      vtexcoord[2] = 1.0f, vtexcoord[3] = 0.0f;
+      vtexcoord[4] = 1.0f, vtexcoord[5] = 1.0f;
+      vtexcoord[6] = 0.0f, vtexcoord[7] = 1.0f;
 
       glGenBuffers(1, &_vbo_tex);
       glBindBuffer(GL_ARRAY_BUFFER, _vbo_tex);
@@ -96,8 +97,44 @@ public:
       glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, tex->get_width(), tex->get_height(), 0, GL_RGB, GL_UNSIGNED_BYTE, tex->get_tex_data());
       glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
       glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+      glGenerateMipmap(GL_TEXTURE_2D);
       GLuint tex_id = glGetUniformLocation(_pid, "tex");
       glUniform1i(tex_id, 0 /*GL_TEXTURE0*/);
+   }
+
+   void set_texture_filtering(GLint filtering){
+      glBindTexture(GL_TEXTURE_2D, _tex);
+      glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, filtering);
+      glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, filtering);
+   }
+
+   void set_texture_anisotropic(GLfloat anisotropic_value){ //needs GL_ARB_texture_filter_anisotropic or EXT
+      glBindTexture(GL_TEXTURE_2D, _tex);
+      glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAX_ANISOTROPY_EXT, anisotropic_value);
+   }
+
+   void set_texture_coord(GLfloat coord[NB_COMPONENTS_VTEXCOORD]){
+      for (size_t i = 0; i < NB_COMPONENTS_VTEXCOORD; i++) {
+         vtexcoord[i] = coord[i];
+      }
+
+      glBindBuffer(GL_ARRAY_BUFFER, _vbo_tex);
+      glBufferData(GL_ARRAY_BUFFER, sizeof(vtexcoord), vtexcoord, GL_STATIC_DRAW);
+      glBindBuffer(GL_ARRAY_BUFFER, 0);
+   }
+
+   void set_texture_scale(GLfloat scale_x, GLfloat scale_y){
+      for (size_t i = 0; i < NB_COMPONENTS_VTEXCOORD; i+=2) {
+         vtexcoord[i] *= scale_x;
+      }
+
+      for (size_t i = 1; i < NB_COMPONENTS_VTEXCOORD; i+=2) {
+         vtexcoord[i] *= scale_y;
+      }
+
+      glBindBuffer(GL_ARRAY_BUFFER, _vbo_tex);
+      glBufferData(GL_ARRAY_BUFFER, sizeof(vtexcoord), vtexcoord, GL_STATIC_DRAW);
+      glBindBuffer(GL_ARRAY_BUFFER, 0);
    }
 
    void draw(glm::mat4x4 model, glm::mat4x4 view, glm::mat4x4 projection){
@@ -138,6 +175,8 @@ protected:
    GLuint _vbo_normals;
    GLuint _pid;
    GLuint _tex;
+
+   GLfloat vtexcoord[NB_COMPONENTS_VTEXCOORD];
 };
 
 #endif
