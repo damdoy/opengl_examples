@@ -20,6 +20,8 @@ public:
       _pid = pid;
       if(_pid == 0) exit(-1);
 
+      tessellation_shader_active = false;
+
       glGenVertexArrays(1, &_vao);
       glBindVertexArray(_vao);
 
@@ -137,6 +139,10 @@ public:
       glBindBuffer(GL_ARRAY_BUFFER, 0);
    }
 
+   void set_tessellation_shader_active(bool active){
+      this->tessellation_shader_active = active;
+   }
+
    void draw(glm::mat4x4 model, glm::mat4x4 view, glm::mat4x4 projection){
       glUseProgram(_pid);
       glBindVertexArray(_vao);
@@ -145,11 +151,19 @@ public:
       glUniformMatrix4fv( glGetUniformLocation(_pid, "view"), 1, GL_FALSE, glm::value_ptr(view));
       glUniformMatrix4fv( glGetUniformLocation(_pid, "projection"), 1, GL_FALSE, glm::value_ptr(projection));
 
+      glUniform3fv( glGetUniformLocation(_pid, "camera_position"), 1, this->camera_position);
+
       glActiveTexture(GL_TEXTURE0);
       glBindTexture(GL_TEXTURE_2D, _tex);
 
       //glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
-      glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
+
+      if(this-> tessellation_shader_active){
+         glDrawElements(GL_PATCHES, 6, GL_UNSIGNED_INT, 0);
+      }
+      else{
+         glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
+      }
 
       glUseProgram(0);
       glBindVertexArray(0);
@@ -177,6 +191,8 @@ protected:
    GLuint _tex;
 
    GLfloat vtexcoord[NB_COMPONENTS_VTEXCOORD];
+
+   bool tessellation_shader_active;
 };
 
 #endif
