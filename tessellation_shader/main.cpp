@@ -57,6 +57,10 @@ const int win_height = 720;
 
 unsigned int effect_select;
 bool activate_wireframe = true;
+bool fixed_tessellation_level_active = false;
+uint fixed_tessellation_level = 1;
+
+GLuint plane_pid;
 
 GLuint compile_shader(const char *shader_filename, GLenum shader_type, const char *shader_description)
 {
@@ -134,6 +138,17 @@ int main(){
          activate_wireframe = false;
       }
 
+      if(glfwGetKey('0') == GLFW_PRESS){
+         fixed_tessellation_level_active = false;
+      }
+
+      for (size_t i = 1; i <= 9; i++) {
+         if(glfwGetKey('0'+i) == GLFW_PRESS){
+            fixed_tessellation_level_active = true;
+            fixed_tessellation_level = i;
+         }
+      }
+
       display();
       glfwSwapBuffers();
    }
@@ -189,7 +204,7 @@ void init(){
    glPatchParameteri(GL_PATCH_VERTICES, 3);
 
    //compile the shader here
-   GLuint plane_pid = glCreateProgram();
+   plane_pid = glCreateProgram();
    GLuint vs_pid = compile_shader("plane_vshader.glsl", GL_VERTEX_SHADER, "vertex shader");
    GLuint fs_pid = compile_shader("plane_fshader.glsl", GL_FRAGMENT_SHADER, "fragment shader");
    GLuint tcs_pid = compile_shader("plane_tcshader.glsl", GL_TESS_CONTROL_SHADER, "TC shader");
@@ -250,6 +265,14 @@ void display(){
    for (size_t i = 0; i < 9; i++) {
       plane[i].set_MVP_matrices(plane_transf[i].get_matrix(), cam->getMatrix(), projection_mat);
    }
+
+   glUseProgram(plane_pid);
+
+   //will be used by the Tessellation control shader
+   glUniform1i( glGetUniformLocation(plane_pid, "fixed_tessellation_level_active"), fixed_tessellation_level_active);
+   glUniform1i( glGetUniformLocation(plane_pid, "fixed_tessellation_level"), fixed_tessellation_level);
+
+   glUseProgram(0);
 
    for (size_t i = 0; i < lst_drawable.size(); i++) {
 

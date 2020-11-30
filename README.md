@@ -24,6 +24,8 @@ Content of the repo:
 - Tree: Procedural generation of realistic trees using L-System
 - Atmospheric scattering: implemented in a similar way as in the [GPU Gems 2 book](https://developer.nvidia.com/gpugems/GPUGems2/gpugems2_chapter16.html)
 - Volumetric clouds: using combination of 3d and 2d noises and particles
+- Texture filtering: use opengl to smooth textures
+- Tessellation shader: implement the level of detail directly in a shader
 
 ## How to build
 All these examples are made to run on a moderately powerful laptop (Intel HD Graphics 620 Intel core i7-7500U 8GB Ram)
