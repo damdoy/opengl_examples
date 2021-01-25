@@ -4,7 +4,6 @@
 #include <cmath>
 
 #include <GL/glew.h>
-#include <GL/glfw.h>
 #include <GL/gl.h>
 #include <GL/glext.h>
 #include <glm/mat4x4.hpp>

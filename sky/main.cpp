@@ -10,7 +10,7 @@ Small triange test in opengl to test minimal functionalities
 #include <chrono>
 #define GL_GLEXT_PROTOTYPES 1
 #include <GL/glew.h>
-#include <GL/glfw.h>
+#include <GLFW/glfw3.h>
 #include <GL/gl.h>
 #include <GL/glext.h>
 #include <IL/il.h>
@@ -90,14 +90,18 @@ int main(){
       return -1;
    }
 
-   glfwOpenWindowHint(GLFW_OPENGL_VERSION_MAJOR, 3);
-   glfwOpenWindowHint(GLFW_OPENGL_VERSION_MINOR, 2);
-   glfwOpenWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
+   glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
+   glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 2);
+   glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
 
-   if( !glfwOpenWindow(win_width, win_height, 0,0,0,0, 32,0, GLFW_WINDOW) ){
+   GLFWwindow* window = glfwCreateWindow(win_width, win_height, "sky", NULL, NULL);
+
+   if( !window ){
       std::cout << "failed to open window" << std::endl;
       return -1;
    }
+
+   glfwMakeContextCurrent(window);
 
    glewExperimental = GL_TRUE;
    if(glewInit() != GLEW_NO_ERROR){
@@ -107,58 +111,59 @@ int main(){
 
    init();
 
-   while(glfwGetKey(GLFW_KEY_ESC)!=GLFW_PRESS && glfwGetWindowParam(GLFW_OPENED)){
+   while(glfwGetKey(window, GLFW_KEY_ESCAPE)!=GLFW_PRESS && !glfwWindowShouldClose(window)){
+      glfwPollEvents();
 
-      if(glfwGetKey('S') == GLFW_PRESS){
+      if(glfwGetKey(window, 'S') == GLFW_PRESS){
          cam->input_handling('S');
       }
-      if(glfwGetKey('A') == GLFW_PRESS){
+      if(glfwGetKey(window, 'A') == GLFW_PRESS){
          cam->input_handling('A');
       }
-      if(glfwGetKey('W') == GLFW_PRESS){
+      if(glfwGetKey(window, 'W') == GLFW_PRESS){
          cam->input_handling('W');
       }
-      if(glfwGetKey('D') == GLFW_PRESS){
+      if(glfwGetKey(window, 'D') == GLFW_PRESS){
          cam->input_handling('D');
       }
 
-      if(glfwGetKey('L') == GLFW_PRESS){
+      if(glfwGetKey(window, 'L') == GLFW_PRESS){
          cam->input_handling('L');
       }
-      if(glfwGetKey('J') == GLFW_PRESS){
+      if(glfwGetKey(window, 'J') == GLFW_PRESS){
          cam->input_handling('J');
       }
-      if(glfwGetKey('K') == GLFW_PRESS){
+      if(glfwGetKey(window, 'K') == GLFW_PRESS){
          cam->input_handling('K');
       }
-      if(glfwGetKey('I') == GLFW_PRESS){
+      if(glfwGetKey(window, 'I') == GLFW_PRESS){
          cam->input_handling('I');
       }
 
       //change position of small light
-      if(glfwGetKey('V') == GLFW_PRESS){
+      if(glfwGetKey(window, 'V') == GLFW_PRESS){
          light_mode_selected = 0;
       }
-      if(glfwGetKey('B') == GLFW_PRESS){
+      if(glfwGetKey(window, 'B') == GLFW_PRESS){
          light_mode_selected = 1;
       }
-      if(glfwGetKey('N') == GLFW_PRESS){
+      if(glfwGetKey(window, 'N') == GLFW_PRESS){
          light_mode_selected = 2;
       }
-      if(glfwGetKey('M') == GLFW_PRESS){
+      if(glfwGetKey(window, 'M') == GLFW_PRESS){
          light_mode_selected = 3;
       }
 
       //whether the sun moves or not
-      if(glfwGetKey('T') == GLFW_PRESS){
+      if(glfwGetKey(window, 'T') == GLFW_PRESS){
          advance_sky = true;
       }
-      if(glfwGetKey('Z') == GLFW_PRESS){
+      if(glfwGetKey(window, 'Y') == GLFW_PRESS){
          advance_sky = false;
       }
 
       display();
-      glfwSwapBuffers();
+      glfwSwapBuffers(window);
    }
 
    cleanup();
@@ -204,7 +209,7 @@ void init(){
    lst_drawable.push_back(&cube_base);
 
    sphere_decoration.init(sphere_pid, 32, 32);
-   sky_sphere.init(64, 64, sky_scale);
+   sky_sphere.init(96, 96, sky_scale);
    cube_decoration.init(cube_pid);
    lst_drawable.push_back(&sphere_decoration);
    lst_drawable.push_back(&cube_decoration);

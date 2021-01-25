@@ -25,5 +25,5 @@ result would be good enough.
 # Controls
 - WASD: moves the camera
 - IJKL: change camera view direction
-- ERTZ: various water effects (more or less waves)
+- ERTY: various water effects (more or less waves)
 - VBNM: change light position

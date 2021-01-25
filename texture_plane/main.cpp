@@ -4,7 +4,7 @@
 #include <cstdlib>
 #define GL_GLEXT_PROTOTYPES 1
 #include <GL/glew.h>
-#include <GL/glfw.h>
+#include <GLFW/glfw3.h>
 #include <GL/gl.h>
 #include <GL/glext.h>
 #include <glm/mat4x4.hpp>
@@ -27,8 +27,9 @@ GLuint load_shader(char *path, GLenum shader_type);
 
 Camera cam;
 Plane plane;
-glm::mat4x4 projection_mat;
-glm::mat4x4 plane_model_mat;
+//init matrices with identity
+glm::mat4x4 projection_mat = glm::mat4(1.0);
+glm::mat4x4 plane_model_mat = glm::mat4(1.0);
 
 Texture plane_texture;
 Texture_checkers tex_checkers;
@@ -42,14 +43,18 @@ int main(){
       return -1;
    }
 
-   glfwOpenWindowHint(GLFW_OPENGL_VERSION_MAJOR, 3);
-   glfwOpenWindowHint(GLFW_OPENGL_VERSION_MINOR, 2);
-   glfwOpenWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
+   glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
+   glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 2);
+   glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
 
-   if( !glfwOpenWindow(win_width, win_height, 0,0,0,0, 32,0, GLFW_WINDOW) ){
+   GLFWwindow* window = glfwCreateWindow(win_width, win_height, "texture_plane", NULL, NULL);
+
+   if( !window ){
       std::cout << "failed to open window" << std::endl;
       return -1;
    }
+
+   glfwMakeContextCurrent(window);
 
    glewExperimental = GL_TRUE;
    if(glewInit() != GLEW_NO_ERROR){
@@ -59,17 +64,18 @@ int main(){
 
    init();
 
-   while(glfwGetKey(GLFW_KEY_ESC)!=GLFW_PRESS && glfwGetWindowParam(GLFW_OPENED)){
-      //glfwPollEvents();
-      if(glfwGetKey('1')==GLFW_PRESS){
+   while(glfwGetKey(window, GLFW_KEY_ESCAPE)!=GLFW_PRESS && !glfwWindowShouldClose(window)){
+      glfwPollEvents();
+
+      if(glfwGetKey(window, '1')==GLFW_PRESS){
          plane.set_texture(&plane_texture);
       }
-      else if(glfwGetKey('2') == GLFW_PRESS){
+      else if(glfwGetKey(window, '2') == GLFW_PRESS){
          plane.set_texture(&tex_checkers);
       }
 
       display();
-      glfwSwapBuffers();
+      glfwSwapBuffers(window);
    }
 
    cleanup();

@@ -21,5 +21,5 @@ Both the diffuse and specular lighting are calculated and both point light and s
 - S: activate specular shading (default)
 - Q: deactivate spotlight
 - W: activate spotlight (default)
-- Y: light going up and down (default)
+- Z: light going up and down (default)
 - X: light rotating above sphere

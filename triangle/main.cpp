@@ -4,7 +4,7 @@
 #include <cstdlib>
 #define GL_GLEXT_PROTOTYPES 1
 #include <GL/glew.h>
-#include <GL/glfw.h>
+#include <GLFW/glfw3.h>
 #include <GL/gl.h>
 #include <GL/glext.h>
 
@@ -24,27 +24,33 @@ int main(){
       return -1;
    }
 
-   glfwOpenWindowHint(GLFW_OPENGL_VERSION_MAJOR, 3);
-   glfwOpenWindowHint(GLFW_OPENGL_VERSION_MINOR, 2);
-   glfwOpenWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
+   glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
+   glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 2);
+   glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
 
-   if( !glfwOpenWindow(512, 512, 0,0,0,0, 32,0, GLFW_WINDOW) ){
+   GLFWwindow* window = glfwCreateWindow(512, 512, "triangle", NULL, NULL);
+
+   if( !window ){
       std::cout << "failed to open window" << std::endl;
       return -1;
    }
 
+   glfwMakeContextCurrent(window);
+
    glewExperimental = GL_TRUE;
-   if(glewInit() != GLEW_NO_ERROR){
-      std::cout << "glew error\n";
+   int init_result = glewInit();
+   if(init_result != GLEW_NO_ERROR){
+      std::cout << "glew error : " << init_result <<"\n";
       return -1;
    }
 
    init();
 
    //main display loop
-   while(glfwGetKey(GLFW_KEY_ESC)!=GLFW_PRESS && glfwGetWindowParam(GLFW_OPENED)){
+   while(glfwGetKey(window, GLFW_KEY_ESCAPE)!=GLFW_PRESS && !glfwWindowShouldClose(window)){
       display();
-      glfwSwapBuffers();
+      glfwSwapBuffers(window);
+      glfwPollEvents();
    }
 
    cleanup();

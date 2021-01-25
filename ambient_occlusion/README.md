@@ -31,5 +31,5 @@ because sphere sampling will give a normal value centered on 0.5, whereas hemisp
 - E: is no SSAO to see how dull the scene looks
 - R: is SSAO without randomisation, which gives "stripes" and glitches
 - T: is SSAO with randomisation
-- Z: is SSAO with randomisation and a smart distribution which concentrate samples around the origin of the sampling sphere
+- Y: is SSAO with randomisation and a smart distribution which concentrate samples around the origin of the sampling sphere
 - U: is SSAO with rand. but using an hemisphere instead of a sphere, allowing to have better results on surfaces

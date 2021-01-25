@@ -4,7 +4,7 @@
 #include <cstdlib>
 #define GL_GLEXT_PROTOTYPES 1
 #include <GL/glew.h>
-#include <GL/glfw.h>
+#include <GLFW/glfw3.h>
 #include <GL/gl.h>
 #include <GL/glext.h>
 #include <glm/mat4x4.hpp>
@@ -36,14 +36,18 @@ int main(){
       return -1;
    }
 
-   glfwOpenWindowHint(GLFW_OPENGL_VERSION_MAJOR, 3);
-   glfwOpenWindowHint(GLFW_OPENGL_VERSION_MINOR, 2);
-   glfwOpenWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
+   glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
+   glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 2);
+   glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
 
-   if( !glfwOpenWindow(win_width, win_height, 0,0,0,0, 32,0, GLFW_WINDOW) ){
+   GLFWwindow* window = glfwCreateWindow(win_width, win_height, "rotating_cube", NULL, NULL);
+
+   if( !window ){
       std::cout << "failed to open window" << std::endl;
       return -1;
    }
+
+   glfwMakeContextCurrent(window);
 
    glewExperimental = GL_TRUE;
    if(glewInit() != GLEW_NO_ERROR){
@@ -53,9 +57,10 @@ int main(){
 
    init();
 
-   while(glfwGetKey(GLFW_KEY_ESC)!=GLFW_PRESS && glfwGetWindowParam(GLFW_OPENED)){
+   while(glfwGetKey(window, GLFW_KEY_ESCAPE)!=GLFW_PRESS && !glfwWindowShouldClose(window)){
       display();
-      glfwSwapBuffers();
+      glfwSwapBuffers(window);
+      glfwPollEvents();
    }
 
    cleanup();
@@ -78,6 +83,7 @@ void init(){
    cube.init(cube_pid);
 
    //transformations for the cube : put it on the plane which is at default at height 0
+   cube_model_mat = glm::mat4(1.0); //identity
    cube_model_mat = glm::translate(cube_model_mat, glm::vec3(0.0, 0.5, 0.0));
    cube_model_mat = glm::scale(cube_model_mat, glm::vec3(0.5, 0.5, 0.5));
 
@@ -88,7 +94,7 @@ void init(){
 void display(){
    glClear(GL_COLOR_BUFFER_BIT);
    glClear(GL_DEPTH_BUFFER_BIT);
-   plane.draw(glm::mat4(), cam.getMatrix(), projection_mat);
+   plane.draw(glm::mat4(1.0), cam.getMatrix(), projection_mat);
 
    float angle = glfwGetTime()*0.5; //glfwGetTime returns time in seconds
 

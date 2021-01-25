@@ -1,4 +1,4 @@
-#version 330 core 
+#version 330 core
 
 in vec3 vpoint;
 uniform mat4 model;
@@ -11,8 +11,10 @@ out float blue;
 
 void main(){
    gl_Position = projection*view*model*vec4(vpoint, 1.0);
+   // gl_Position = model*vec4(vpoint, 1.0);
+   // gl_Position = vec4(vpoint, 1.0);
    red = green = blue = 0.0;
-   
+
    if(gl_VertexID == 0){
       red = 1.0;
    }

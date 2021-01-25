@@ -7,7 +7,7 @@
 #include <chrono>
 #define GL_GLEXT_PROTOTYPES 1
 #include <GL/glew.h>
-#include <GL/glfw.h>
+#include <GLFW/glfw3.h>
 #include <GL/gl.h>
 #include <GL/glext.h>
 #include <glm/mat4x4.hpp>
@@ -52,14 +52,18 @@ int main(){
       return -1;
    }
 
-   glfwOpenWindowHint(GLFW_OPENGL_VERSION_MAJOR, 3);
-   glfwOpenWindowHint(GLFW_OPENGL_VERSION_MINOR, 2);
-   glfwOpenWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
+   glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
+   glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 2);
+   glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
 
-   if( !glfwOpenWindow(win_width, win_height, 0,0,0,0, 32,0, GLFW_WINDOW) ){
+   GLFWwindow* window = glfwCreateWindow(win_width, win_height, "terrain_camera", NULL, NULL);
+
+   if( !window ){
       std::cout << "failed to open window" << std::endl;
       return -1;
    }
+
+   glfwMakeContextCurrent(window);
 
    glewExperimental = GL_TRUE;
    if(glewInit() != GLEW_NO_ERROR){
@@ -70,80 +74,81 @@ int main(){
    init();
 
    //main loop: control and drawing
-   while(glfwGetKey(GLFW_KEY_ESC)!=GLFW_PRESS && glfwGetWindowParam(GLFW_OPENED)){
+   while(glfwGetKey(window, GLFW_KEY_ESCAPE)!=GLFW_PRESS && !glfwWindowShouldClose(window)){
+      glfwPollEvents();
 
-      if(glfwGetKey('0') == GLFW_PRESS){
+      if(glfwGetKey(window, '0') == GLFW_PRESS){
          light_mode = 0;
       }
-      else if(glfwGetKey('1') == GLFW_PRESS){
+      else if(glfwGetKey(window, '1') == GLFW_PRESS){
          light_mode = 1;
       }
-      else if(glfwGetKey('2') == GLFW_PRESS){
+      else if(glfwGetKey(window, '2') == GLFW_PRESS){
          light_mode = 2;
       }
 
       //moving
-      if(glfwGetKey('S') == GLFW_PRESS){
+      if(glfwGetKey(window, 'S') == GLFW_PRESS){
          cam->input_handling('S');
       }
-      if(glfwGetKey('A') == GLFW_PRESS){
+      if(glfwGetKey(window, 'A') == GLFW_PRESS){
          cam->input_handling('A');
       }
-      if(glfwGetKey('W') == GLFW_PRESS){
+      if(glfwGetKey(window, 'W') == GLFW_PRESS){
          cam->input_handling('W');
       }
-      if(glfwGetKey('D') == GLFW_PRESS){
+      if(glfwGetKey(window, 'D') == GLFW_PRESS){
          cam->input_handling('D');
       }
 
       //change view direction
-      if(glfwGetKey('L') == GLFW_PRESS){
+      if(glfwGetKey(window, 'L') == GLFW_PRESS){
          cam->input_handling('L');
       }
-      if(glfwGetKey('J') == GLFW_PRESS){
+      if(glfwGetKey(window, 'J') == GLFW_PRESS){
          cam->input_handling('J');
       }
-      if(glfwGetKey('K') == GLFW_PRESS){
+      if(glfwGetKey(window, 'K') == GLFW_PRESS){
          cam->input_handling('K');
       }
-      if(glfwGetKey('I') == GLFW_PRESS){
+      if(glfwGetKey(window, 'I') == GLFW_PRESS){
          cam->input_handling('I');
       }
 
       //change camera type
-      if(glfwGetKey('M') == GLFW_PRESS){
+      if(glfwGetKey(window, 'M') == GLFW_PRESS){
          cam = &cam_free;
       }
-      if(glfwGetKey('N') == GLFW_PRESS){
+      if(glfwGetKey(window, 'N') == GLFW_PRESS){
          cam = &cam_fps;
       }
 
       //have a moving light or not
-      if(glfwGetKey('B') == GLFW_PRESS){
+      if(glfwGetKey(window, 'B') == GLFW_PRESS){
          moving_light = false;
       }
-      if(glfwGetKey('V') == GLFW_PRESS){
+      if(glfwGetKey(window, 'V') == GLFW_PRESS){
          moving_light = true;
       }
 
       //activate the colours of the terrain
-      if(glfwGetKey('Y') == GLFW_PRESS){
+      if(glfwGetKey(window, 'Z') == GLFW_PRESS){
          activate_colour = true;
       }
-      if(glfwGetKey('X') == GLFW_PRESS){
+      if(glfwGetKey(window, 'X') == GLFW_PRESS){
          activate_colour = false;
       }
 
       //activate heightmap: display the height value as colour black=deep white=high
-      if(glfwGetKey('T') == GLFW_PRESS){
+      if(glfwGetKey(window, 'T') == GLFW_PRESS){
          activate_heightmap = true;
       }
-      if(glfwGetKey('Z') == GLFW_PRESS){
+      if(glfwGetKey(window, 'Y') == GLFW_PRESS){
          activate_heightmap = false;
       }
 
       display();
-      glfwSwapBuffers();
+      glfwSwapBuffers(window);
    }
 
    cleanup();

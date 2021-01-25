@@ -28,12 +28,15 @@ Content of the repo:
 - Tessellation shader: implement the level of detail directly in a shader
 
 ## How to build
-All these examples are made to run on a moderately powerful laptop (Intel HD Graphics 620 Intel core i7-7500U 8GB Ram)
+All of these examples have been tested on the following hardware:
 
-There were compiled on a Linux Mint 18.1, the needed libraries are the following:
+- Intel HD graphics 620
 
-- glfw2 2.7.9
-- glew 1.13.0
+There were compiled on a Linux Mint 20, the needed libraries are the following:
+
+- glfw 3.3.2
+- glew 2.1.0
 - devIl 1.7.8
+- glm 0.9.9.7
 
 Create a `build` folder in the example you want to build, then from the `build` folder, `cmake ..` to populate it and `make` to build the example

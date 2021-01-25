@@ -5,7 +5,7 @@
 #include <cmath>
 #define GL_GLEXT_PROTOTYPES 1
 #include <GL/glew.h>
-#include <GL/glfw.h>
+#include <GLFW/glfw3.h>
 #include <GL/gl.h>
 #include <GL/glext.h>
 #include <glm/mat4x4.hpp>
@@ -30,8 +30,8 @@ GLuint load_shader(char *path, GLenum shader_type);
 Camera cam;
 Plane plane;
 Sphere sphere;
-glm::mat4x4 projection_mat;
-glm::mat4x4 sphere_model_mat;
+glm::mat4x4 projection_mat = glm::mat4(1.0);
+glm::mat4x4 sphere_model_mat = glm::mat4(1.0);
 
 GLuint pid_shader_plane;
 GLuint pid_shader_sphere;
@@ -53,14 +53,18 @@ int main(){
       return -1;
    }
 
-   glfwOpenWindowHint(GLFW_OPENGL_VERSION_MAJOR, 3);
-   glfwOpenWindowHint(GLFW_OPENGL_VERSION_MINOR, 2);
-   glfwOpenWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
+   glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
+   glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 2);
+   glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
 
-   if( !glfwOpenWindow(win_width, win_height, 0,0,0,0, 32,0, GLFW_WINDOW) ){
+   GLFWwindow* window = glfwCreateWindow(win_width, win_height, "sphere_light", NULL, NULL);
+
+   if( !window ){
       std::cout << "failed to open window" << std::endl;
       return -1;
    }
+
+   glfwMakeContextCurrent(window);
 
    glewExperimental = GL_TRUE;
    if(glewInit() != GLEW_NO_ERROR){
@@ -71,41 +75,42 @@ int main(){
    init();
 
    //mainloop with input control
-   while(glfwGetKey(GLFW_KEY_ESC)!=GLFW_PRESS && glfwGetWindowParam(GLFW_OPENED)){
+   while(glfwGetKey(window, GLFW_KEY_ESCAPE)!=GLFW_PRESS && !glfwWindowShouldClose(window)){
+      glfwPollEvents();
 
-      if(glfwGetKey('0') == GLFW_PRESS){
+      if(glfwGetKey(window, '0') == GLFW_PRESS){
          light_mode = 0;
       }
-      else if(glfwGetKey('1') == GLFW_PRESS){
+      else if(glfwGetKey(window, '1') == GLFW_PRESS){
          light_mode = 1;
       }
-      else if(glfwGetKey('2') == GLFW_PRESS){
+      else if(glfwGetKey(window, '2') == GLFW_PRESS){
          light_mode = 2;
       }
 
-      if(glfwGetKey('S') == GLFW_PRESS){
+      if(glfwGetKey(window, 'S') == GLFW_PRESS){
          activate_specular = true;
       }
-      else if(glfwGetKey('A') == GLFW_PRESS){
+      else if(glfwGetKey(window, 'A') == GLFW_PRESS){
          activate_specular = false;
       }
 
-      if(glfwGetKey('W') == GLFW_PRESS){
+      if(glfwGetKey(window, 'W') == GLFW_PRESS){
          activate_spot = true;
       }
-      else if(glfwGetKey('Q') == GLFW_PRESS){
+      else if(glfwGetKey(window, 'Q') == GLFW_PRESS){
          activate_spot = false;
       }
 
-      if(glfwGetKey('Y') == GLFW_PRESS){
+      if(glfwGetKey(window, 'Y') == GLFW_PRESS){
          light_animation = 0; //side light
       }
-      else if(glfwGetKey('X') == GLFW_PRESS){
+      else if(glfwGetKey(window, 'X') == GLFW_PRESS){
          light_animation = 1; // rotating light
       }
 
       display();
-      glfwSwapBuffers();
+      glfwSwapBuffers(window);
    }
 
    cleanup();
@@ -145,7 +150,7 @@ void init(){
 void display(){
    glClear(GL_COLOR_BUFFER_BIT);
    glClear(GL_DEPTH_BUFFER_BIT);
-   plane.draw(glm::mat4(), cam.getMatrix(), projection_mat);
+   plane.draw(glm::mat4(1.0), cam.getMatrix(), projection_mat);
    float angle = glfwGetTime()*0.5;
    glm::mat4 sphere_model_mat_rot = glm::rotate(sphere_model_mat, angle, glm::vec3(0.0, 1.0, 0.0));
 

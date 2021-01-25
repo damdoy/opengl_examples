@@ -20,5 +20,5 @@ Other evaluated noise functions were linear, which is fast but gives ugly result
 - M: free camera
 - N: fps camera, stuck to the ground (default)
 - B/V: activate/deactivate moving light (default is not moving)
-- Y/X: activate/deactivate colour (default is colour)
-- T/Z: activate/deactivate heighmap: draw terrain pixel depending on their height (default is not drawn)
+- Z/X: activate/deactivate colour (default is colour)
+- T/Y: activate/deactivate heighmap: draw terrain pixel depending on their height (default is not drawn)

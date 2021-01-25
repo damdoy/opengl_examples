@@ -7,7 +7,7 @@
 #include <chrono>
 #define GL_GLEXT_PROTOTYPES 1
 #include <GL/glew.h>
-#include <GL/glfw.h>
+#include <GLFW/glfw3.h>
 #include <GL/gl.h>
 #include <GL/glext.h>
 #include <IL/il.h>
@@ -95,15 +95,18 @@ int main(){
       return -1;
    }
 
-   glfwOpenWindowHint(GLFW_OPENGL_VERSION_MAJOR, 3);
-   glfwOpenWindowHint(GLFW_OPENGL_VERSION_MINOR, 2);
-   glfwOpenWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
-   //glfwOpenWindowHint(GLFW_FSAA_SAMPLES, 4);
+   glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
+   glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 2);
+   glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
 
-   if( !glfwOpenWindow(win_width, win_height, 0,0,0,0, 32,0, GLFW_WINDOW) ){
+   GLFWwindow* window = glfwCreateWindow(win_width, win_height, "volumetric_clouds", NULL, NULL);
+
+   if( !window ){
       std::cout << "failed to open window" << std::endl;
       return -1;
    }
+
+   glfwMakeContextCurrent(window);
 
    glewExperimental = GL_TRUE;
    if(glewInit() != GLEW_NO_ERROR){
@@ -113,45 +116,46 @@ int main(){
 
    init();
 
-   while(glfwGetKey(GLFW_KEY_ESC)!=GLFW_PRESS && glfwGetWindowParam(GLFW_OPENED)){
+   while(glfwGetKey(window, GLFW_KEY_ESCAPE)!=GLFW_PRESS && !glfwWindowShouldClose(window)){
+      glfwPollEvents();
 
-      if(glfwGetKey('S') == GLFW_PRESS){
+      if(glfwGetKey(window, 'S') == GLFW_PRESS){
          cam->input_handling('S');
       }
-      if(glfwGetKey('A') == GLFW_PRESS){
+      if(glfwGetKey(window, 'A') == GLFW_PRESS){
          cam->input_handling('A');
       }
-      if(glfwGetKey('W') == GLFW_PRESS){
+      if(glfwGetKey(window, 'W') == GLFW_PRESS){
          cam->input_handling('W');
       }
-      if(glfwGetKey('D') == GLFW_PRESS){
+      if(glfwGetKey(window, 'D') == GLFW_PRESS){
          cam->input_handling('D');
       }
 
-      if(glfwGetKey('L') == GLFW_PRESS){
+      if(glfwGetKey(window, 'L') == GLFW_PRESS){
          cam->input_handling('L');
       }
-      if(glfwGetKey('J') == GLFW_PRESS){
+      if(glfwGetKey(window, 'J') == GLFW_PRESS){
          cam->input_handling('J');
       }
-      if(glfwGetKey('K') == GLFW_PRESS){
+      if(glfwGetKey(window, 'K') == GLFW_PRESS){
          cam->input_handling('K');
       }
-      if(glfwGetKey('I') == GLFW_PRESS){
+      if(glfwGetKey(window, 'I') == GLFW_PRESS){
          cam->input_handling('I');
       }
 
-      if(glfwGetKey('N') == GLFW_PRESS){
+      if(glfwGetKey(window, 'N') == GLFW_PRESS){
          if(cloud_amount-cloud_amount_delta > 0)
             cloud_amount -= cloud_amount_delta;
       }
 
-      if(glfwGetKey('M') == GLFW_PRESS){
+      if(glfwGetKey(window, 'M') == GLFW_PRESS){
          if(cloud_amount+cloud_amount_delta < 1.0f)
             cloud_amount += cloud_amount_delta;
       }
 
-      if(glfwGetKey('X') == GLFW_PRESS){ //day
+      if(glfwGetKey(window, 'X') == GLFW_PRESS){ //day
          cloud_manager.set_light_colour(1.0, 1.0, 1.0);
          cloud_manager.set_shadow_colour(0.0, 0.0, 0.0);
          cloud_manager.set_shadow_factor(0.4f);
@@ -164,7 +168,7 @@ int main(){
          cloud_amount += 0.001f; //will force a cloud recalculation
       }
 
-      if(glfwGetKey('C') == GLFW_PRESS){ //evening
+      if(glfwGetKey(window, 'C') == GLFW_PRESS){ //evening
          cloud_manager.set_light_colour(0.9, 0.6, 0.3);
          cloud_manager.set_shadow_colour(0.1, 0.2, 0.3);
          cloud_manager.set_shadow_factor(0.7f);
@@ -179,7 +183,7 @@ int main(){
       }
 
       display();
-      glfwSwapBuffers();
+      glfwSwapBuffers(window);
    }
 
    cleanup();

@@ -31,7 +31,7 @@ These techniques can produce interesting effects (see the 7x7 matrix PCF) but is
    - E: no shadow mapping
    - R: shadow mapping without processing: the raw shadow map is drawn, square pixels will appear
    - T: The shadow maps pixels are lineary interpolated, making the shadow "smoother"
-   - Z: PCF without bilinear interpolation (3x3 PCF matrix)
+   - Y: PCF without bilinear interpolation (3x3 PCF matrix)
    - U: PCF with bilinear interpolation (3x3 PCF matrix)
    - F: PCF with bilinear interpolation (7x7 PCF matrix)
    - G: optimized PCF with bilinear interpolation (3x3 PCF matrix)
