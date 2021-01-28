@@ -31,6 +31,7 @@ Content of the repo:
 All of these examples have been tested on the following hardware:
 
 - Intel HD graphics 620
+- Nvidia GeForce 940MX
 
 There were compiled on a Linux Mint 20, the needed libraries are the following:
 

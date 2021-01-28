@@ -65,7 +65,7 @@ void main(){
 
 float get_shadow_val_pcf(bool lerp, int size){
    float ret_val = 0.0;
-   float size_increment = 1.0/shadow_buffer_tex_size;
+   float size_increment = 1.0/float(shadow_buffer_tex_size);
    int counter_avg = 0;
 
    for(int i = -size; i <= size; i++){
@@ -87,7 +87,7 @@ float get_shadow_val_pcf(bool lerp, int size){
 
 float get_shadow_val_pcf_optim(bool lerp, int size){
    float ret_val = 0.0;
-   float size_increment = 1.0/shadow_buffer_tex_size;
+   float size_increment = 1.0/float(shadow_buffer_tex_size);
    int counter_avg = 0;
 
    for(int i = -size; i <= size; i++){
@@ -109,7 +109,7 @@ float get_shadow_val_pcf_optim(bool lerp, int size){
 
 float get_shadow_val_lerp(float offset_x, float offset_y){
    float val = 0.0;
-   float size_increment = 1.0/shadow_buffer_tex_size;
+   float size_increment = 1.0/float(shadow_buffer_tex_size);
    vec2 shadow_tex_position = (shadow_coord.xy/shadow_coord.w) + vec2(offset_x, offset_y);
    //vec2 frac_parts = mod(shadow_tex_position*shadow_buffer_tex_size, 1.0);
    vec2 frac_parts = shadow_tex_position*shadow_buffer_tex_size-floor(shadow_tex_position*shadow_buffer_tex_size);
