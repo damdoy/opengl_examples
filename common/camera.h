@@ -49,7 +49,7 @@ public:
       return glm::perspective(3.1415f/2.0f, (float)win_width/(float)win_height, 0.1f, 1000.0f);
    }
 
-   virtual void input_handling(char){
+   virtual void input_handling(char, float){
 
    }
 

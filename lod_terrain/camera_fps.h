@@ -24,10 +24,10 @@ public:
       this->terrain = terrain;
    }
 
-   virtual void input_handling(char key){
+   virtual void input_handling(char key, float time_delta){
 
       glm::vec3 direction;
-      glm::vec3 speed_factor = glm::vec3(0.1f);
+      glm::vec3 speed_factor = glm::vec3(this->speed)*time_delta;
 
       direction = center - eye;
       direction = glm::vec3(direction[0], 0.0f, direction[2]);
@@ -63,7 +63,7 @@ public:
          center[1] += height_diff+height;
       }
       else {
-         Camera_free::input_handling(key);
+         Camera_free::input_handling(key, time_delta);
       }
 
    }

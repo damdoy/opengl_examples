@@ -216,18 +216,20 @@ public:
       glBindVertexArray(0);
    }
 
-   void draw_ileaves(){
-
+   void move_leaves(float time_delta){
       //advance the lookup on the wind texture
-      wind_offset[0] += 0.002f;
+      wind_offset[0] += time_delta/4;
       if(wind_offset[0] > 10.0f){
          wind_offset[0] = 0;
       }
 
-      wind_offset[1] += 0.001f;
+      wind_offset[1] += time_delta/8;
       if(wind_offset[1] > 10.0f){
          wind_offset[1] = 0;
       }
+   }
+
+   void draw_ileaves(){
 
       glUseProgram(_pid_ileaves);
       glBindVertexArray(_vao_ileaves);
@@ -279,6 +281,7 @@ protected:
 
    uint trunk_nb_indices_to_draw;
 
+   float time_delta;
    float wind_offset[2];
 
    std::vector<glm::mat4x4> mat_vector_leaves;

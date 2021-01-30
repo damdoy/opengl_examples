@@ -108,30 +108,35 @@ int main(){
    while(glfwGetKey(window, GLFW_KEY_ESCAPE)!=GLFW_PRESS && !glfwWindowShouldClose(window)){
       glfwPollEvents();
 
+      static float prev_time = 0;
+
+      float current_time = glfwGetTime();
+      float time_delta = current_time-prev_time;
+
       if(glfwGetKey(window, 'S') == GLFW_PRESS){
-         cam->input_handling('S');
+         cam->input_handling('S', time_delta);
       }
       if(glfwGetKey(window, 'A') == GLFW_PRESS){
-         cam->input_handling('A');
+         cam->input_handling('A', time_delta);
       }
       if(glfwGetKey(window, 'W') == GLFW_PRESS){
-         cam->input_handling('W');
+         cam->input_handling('W', time_delta);
       }
       if(glfwGetKey(window, 'D') == GLFW_PRESS){
-         cam->input_handling('D');
+         cam->input_handling('D', time_delta);
       }
 
       if(glfwGetKey(window, 'L') == GLFW_PRESS){
-         cam->input_handling('L');
+         cam->input_handling('L', time_delta);
       }
       if(glfwGetKey(window, 'J') == GLFW_PRESS){
-         cam->input_handling('J');
+         cam->input_handling('J', time_delta);
       }
       if(glfwGetKey(window, 'K') == GLFW_PRESS){
-         cam->input_handling('K');
+         cam->input_handling('K', time_delta);
       }
       if(glfwGetKey(window, 'I') == GLFW_PRESS){
-         cam->input_handling('I');
+         cam->input_handling('I', time_delta);
       }
 
       if(glfwGetKey(window, 'N') == GLFW_PRESS){
@@ -144,6 +149,8 @@ int main(){
 
       display();
       glfwSwapBuffers(window);
+
+      prev_time = current_time;
    }
 
    cleanup();
@@ -325,7 +332,7 @@ void init(){
 
    cam_free.lookAt(68.0f, 0.0f, 68.0f, 0.0f, 0.0f, 0.0f, 0.0f, 1.0f, 0.0f);
    cam_free.set_window_size(win_width, win_height);
-   cam_free.set_speed(0.2f);
+   cam_free.set_speed(15.0f);
 
    cam = &cam_free;
    cam_free.update_pos();

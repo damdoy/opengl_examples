@@ -77,6 +77,11 @@ int main(){
    while(glfwGetKey(window, GLFW_KEY_ESCAPE)!=GLFW_PRESS && !glfwWindowShouldClose(window)){
       glfwPollEvents();
 
+      static float prev_time = 0;
+
+      float current_time = glfwGetTime();
+      float time_delta = current_time-prev_time;
+
       if(glfwGetKey(window, '0') == GLFW_PRESS){
          light_mode = 0;
       }
@@ -89,30 +94,30 @@ int main(){
 
       //moving
       if(glfwGetKey(window, 'S') == GLFW_PRESS){
-         cam->input_handling('S');
+         cam->input_handling('S', time_delta);
       }
       if(glfwGetKey(window, 'A') == GLFW_PRESS){
-         cam->input_handling('A');
+         cam->input_handling('A', time_delta);
       }
       if(glfwGetKey(window, 'W') == GLFW_PRESS){
-         cam->input_handling('W');
+         cam->input_handling('W', time_delta);
       }
       if(glfwGetKey(window, 'D') == GLFW_PRESS){
-         cam->input_handling('D');
+         cam->input_handling('D', time_delta);
       }
 
       //change view direction
       if(glfwGetKey(window, 'L') == GLFW_PRESS){
-         cam->input_handling('L');
+         cam->input_handling('L', time_delta);
       }
       if(glfwGetKey(window, 'J') == GLFW_PRESS){
-         cam->input_handling('J');
+         cam->input_handling('J', time_delta);
       }
       if(glfwGetKey(window, 'K') == GLFW_PRESS){
-         cam->input_handling('K');
+         cam->input_handling('K', time_delta);
       }
       if(glfwGetKey(window, 'I') == GLFW_PRESS){
-         cam->input_handling('I');
+         cam->input_handling('I', time_delta);
       }
 
       //change camera type
@@ -149,6 +154,8 @@ int main(){
 
       display();
       glfwSwapBuffers(window);
+
+      prev_time = current_time;
    }
 
    cleanup();
@@ -192,9 +199,11 @@ void init(){
    cam_fixed.lookAt(1.5f, 1.5f, 1.5f, 0.0f, 0.0f, 0.0f, 0.0f, 1.0f, 0.0f);
 
    cam_free.lookAt(3.0f, 3.0f, 3.0f, 0.0f, 0.0f, 0.0f, 0.0f, 1.0f, 0.0f);
+   cam_free.set_speed(25.0f);
 
    cam_fps.lookAt(1.5f, 1.5f, 1.5f, 0.0f, 0.0f, 0.0f, 0.0f, 1.0f, 0.0f);
    cam_fps.init(0.5f, &terrain);
+   cam_fps.set_speed(10.0f);
 
    cam = &cam_fps;
    cam_fps.update_pos();

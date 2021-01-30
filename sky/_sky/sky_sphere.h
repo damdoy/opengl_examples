@@ -35,7 +35,7 @@ public:
       const_sun_red[1] = 0.3;
       const_sun_red[2] = 0.1;
 
-      sun_counter = 0.0;
+      sun_counter = 1.0;
 
       this->sky_size = sky_size;
 
@@ -57,8 +57,8 @@ public:
    }
 
    //moves the sun
-   void advance_sun(){
-      sun_counter += 0.005;
+   void advance_sun(float time_delta){
+      sun_counter += time_delta/2;
       sun_dir[0] = sin(sun_counter);
       sun_dir[1] = cos(sun_counter);
 

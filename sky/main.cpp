@@ -34,7 +34,7 @@ Small triange test in opengl to test minimal functionalities
 
 
 void init();
-void display();
+void display(float time_delta);
 void cleanup();
 GLuint load_shader(char *path, GLenum shader_type);
 
@@ -114,30 +114,35 @@ int main(){
    while(glfwGetKey(window, GLFW_KEY_ESCAPE)!=GLFW_PRESS && !glfwWindowShouldClose(window)){
       glfwPollEvents();
 
+      static float prev_time = 0;
+
+      float current_time = glfwGetTime();
+      float time_delta = current_time-prev_time;
+
       if(glfwGetKey(window, 'S') == GLFW_PRESS){
-         cam->input_handling('S');
+         cam->input_handling('S', time_delta);
       }
       if(glfwGetKey(window, 'A') == GLFW_PRESS){
-         cam->input_handling('A');
+         cam->input_handling('A', time_delta);
       }
       if(glfwGetKey(window, 'W') == GLFW_PRESS){
-         cam->input_handling('W');
+         cam->input_handling('W', time_delta);
       }
       if(glfwGetKey(window, 'D') == GLFW_PRESS){
-         cam->input_handling('D');
+         cam->input_handling('D', time_delta);
       }
 
       if(glfwGetKey(window, 'L') == GLFW_PRESS){
-         cam->input_handling('L');
+         cam->input_handling('L', time_delta);
       }
       if(glfwGetKey(window, 'J') == GLFW_PRESS){
-         cam->input_handling('J');
+         cam->input_handling('J', time_delta);
       }
       if(glfwGetKey(window, 'K') == GLFW_PRESS){
-         cam->input_handling('K');
+         cam->input_handling('K', time_delta);
       }
       if(glfwGetKey(window, 'I') == GLFW_PRESS){
-         cam->input_handling('I');
+         cam->input_handling('I', time_delta);
       }
 
       //change position of small light
@@ -162,8 +167,10 @@ int main(){
          advance_sky = false;
       }
 
-      display();
+      display(time_delta);
       glfwSwapBuffers(window);
+
+      prev_time = current_time;
    }
 
    cleanup();
@@ -234,7 +241,7 @@ void init(){
    cam_fixed.lookAt(1.5f, 1.5f, 1.5f, 0.0f, 0.0f, 0.0f, 0.0f, 1.0f, 0.0f);
    cam_fixed.set_window_size(win_width, win_height);
 
-   cam_free.lookAt(6.0f, 6.0f, -4.0f, 0.0f, 0.0f, 0.0f, 0.0f, 1.0f, 0.0f);
+   cam_free.lookAt(10.0f, 6.0f, -4.0f, 0.0f, 0.0f, 0.0f, 0.0f, 1.0f, 0.0f);
    cam_free.set_window_size(win_width, win_height);
 
    cam = &cam_free;
@@ -245,14 +252,14 @@ void init(){
    }
 }
 
-void display(){
+void display(float time_delta){
 
    cam->get_position(camera_position);
    cam->get_direction(camera_direction);
 
    //move the sun
    if(advance_sky){
-      sky_sphere.advance_sun();
+      sky_sphere.advance_sun(time_delta);
    }
 
    //update matrices for scene objects

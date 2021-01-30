@@ -27,7 +27,7 @@
 #include "_trees/tree.h"
 
 void init();
-void display();
+void display(float time_delta);
 void cleanup();
 GLuint load_shader(char *path, GLenum shader_type);
 
@@ -96,30 +96,35 @@ int main(){
    while(glfwGetKey(window, GLFW_KEY_ESCAPE)!=GLFW_PRESS && !glfwWindowShouldClose(window)){
       glfwPollEvents();
 
+      static float prev_time = 0;
+
+      float current_time = glfwGetTime();
+      float time_delta = current_time-prev_time;
+
       if(glfwGetKey(window, 'S') == GLFW_PRESS){
-         cam->input_handling('S');
+         cam->input_handling('S', time_delta);
       }
       if(glfwGetKey(window, 'A') == GLFW_PRESS){
-         cam->input_handling('A');
+         cam->input_handling('A', time_delta);
       }
       if(glfwGetKey(window, 'W') == GLFW_PRESS){
-         cam->input_handling('W');
+         cam->input_handling('W', time_delta);
       }
       if(glfwGetKey(window, 'D') == GLFW_PRESS){
-         cam->input_handling('D');
+         cam->input_handling('D', time_delta);
       }
 
       if(glfwGetKey(window, 'L') == GLFW_PRESS){
-         cam->input_handling('L');
+         cam->input_handling('L', time_delta);
       }
       if(glfwGetKey(window, 'J') == GLFW_PRESS){
-         cam->input_handling('J');
+         cam->input_handling('J', time_delta);
       }
       if(glfwGetKey(window, 'K') == GLFW_PRESS){
-         cam->input_handling('K');
+         cam->input_handling('K', time_delta);
       }
       if(glfwGetKey(window, 'I') == GLFW_PRESS){
-         cam->input_handling('I');
+         cam->input_handling('I', time_delta);
       }
 
       if(glfwGetKey(window, 'R') == GLFW_PRESS){
@@ -131,8 +136,10 @@ int main(){
          lst_drawable.push_back(tree);
       }
 
-      display();
+      display(time_delta);
       glfwSwapBuffers(window);
+
+      prev_time = current_time;
    }
 
    cleanup();
@@ -215,7 +222,7 @@ void init(){
    }
 }
 
-void display(){
+void display(float time_delta){
 
    cam->get_position(camera_position);
    cam->get_direction(camera_direction);
@@ -233,6 +240,8 @@ void display(){
       lst_drawable[i]->set_shadow_buffer_texture_size(win_width, win_height);
       lst_drawable[i]->set_window_dim(win_width, win_height);
    }
+
+   tree->move_leaves(time_delta);
 
    framebuffer->bind(); //print to the real, color, multisample frambuffer
 

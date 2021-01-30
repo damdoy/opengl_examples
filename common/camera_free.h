@@ -9,7 +9,8 @@
 class Camera_free : public Camera{
 public:
    Camera_free(){
-      speed = 0.1f;
+      this->speed = 4.0f;
+      this->angle_change_per_second = 1.8f;
    }
 
    virtual void lookAt(glm::vec3 eye, glm::vec3 center, glm::vec3 up){
@@ -48,10 +49,14 @@ public:
       this->speed = speed;
    }
 
-   virtual void input_handling(char key){
+   void set_view_speec(float speed){
+      this->angle_change_per_second = speed;
+   }
+
+   virtual void input_handling(char key, float time_delta){
 
       glm::vec3 direction;
-      glm::vec3 speed_factor = glm::vec3(speed);
+      glm::vec3 speed_factor = glm::vec3(speed)*time_delta;
 
       direction = center - eye;
       direction = normalize(direction);
@@ -77,22 +82,24 @@ public:
             center = center + speed_factor*right_dir;
       }
 
+      float angle_change = this->angle_change_per_second*time_delta;
+
       if(key == 'J'){
-         angle_side -= 0.05f;
+         angle_side -= angle_change;
          change_cam_orientation();
       }
       if(key == 'L'){
-         angle_side += 0.05f;
+         angle_side += angle_change;
          change_cam_orientation();
       }
       if(key == 'I'){
-         if(angle_up-0.05f > 0.0f)
-            angle_up -= 0.05f;
+         if(angle_up-angle_change > 0.0f)
+            angle_up -= angle_change;
          change_cam_orientation();
       }
       if(key == 'K'){
-         if(angle_up+0.05f < 3.14f)
-            angle_up += 0.05f;
+         if(angle_up+angle_change < 3.14f)
+            angle_up += angle_change;
 
          change_cam_orientation();
       }
@@ -106,6 +113,9 @@ protected:
    float angle_up;
    float angle_side;
 
+   float angle_change_per_second;
+
+   //units per seconds
    float speed;
 
    virtual void change_cam_orientation(){
