@@ -9,6 +9,7 @@ Content of the repo:
 
 - Triangle: hello world program, tests the display and the buffers
 - Rotating cube: Add movement in the scene and transormation matrices
+- Mouse control: Ability to move an object with the mouse similarly to an arcball camera
 - Texture plane: Tests textures, both from an image and generated
 - Sphere light: Different lightings on a sphere: Flat Goureaud and Phong with interacitvity to select the lighting type
 - Terrain camera: A terrain generated with a Perlin noise in which we can navigate with either a free moving camera or a FPS-style one
