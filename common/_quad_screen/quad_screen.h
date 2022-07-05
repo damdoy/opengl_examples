@@ -58,6 +58,10 @@ public:
       this->_ao_tex = ao_tex;
    }
 
+   void set_depth_texture(GLuint depth_tex){
+      this->_depth_tex = depth_tex;
+   }
+
    void cleanup(){
      /// TODO
    }
@@ -71,7 +75,7 @@ public:
       glUniform1ui( glGetUniformLocation(_pid, "effect_select"), effect_select);
       glUniform1f( glGetUniformLocation(_pid, "tex_width"), _width);
       glUniform1f( glGetUniformLocation(_pid, "tex_height"), _height);
-      
+
       glActiveTexture(GL_TEXTURE0);
       glBindTexture(GL_TEXTURE_2D, _tex);
       GLuint tex_id = glGetUniformLocation(_pid, "tex");
@@ -81,6 +85,11 @@ public:
       glBindTexture(GL_TEXTURE_2D, _ao_tex);
       tex_id = glGetUniformLocation(_pid, "ao_tex");
       glUniform1i(tex_id, 1 /*GL_TEXTURE1*/);
+
+      glActiveTexture(GL_TEXTURE2);
+      glBindTexture(GL_TEXTURE_2D, _depth_tex);
+      tex_id = glGetUniformLocation(_pid, "depth_tex");
+      glUniform1i(tex_id, 2 /*GL_TEXTURE1*/);
 
       glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
 
@@ -95,6 +104,7 @@ protected:
      GLuint _vbo;
      GLuint _tex;
      GLuint _ao_tex;
+     GLuint _depth_tex;
      unsigned int _width;
      unsigned int _height;
 };

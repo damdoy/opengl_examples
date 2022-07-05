@@ -18,14 +18,18 @@
 class Depth_framebuffer{
 
 public:
-   void init(unsigned texture_size){
-      init(texture_size, texture_size);
+   void init(unsigned texture_size, float perspective = 3.1415f/1.6f){
+      init(texture_size, texture_size, perspective);
    }
 
-   void init(unsigned tex_width, unsigned tex_height){
+   void init(unsigned tex_width, unsigned tex_height, float perspective = 3.1415f/1.6f){
 
       this->tex_width = tex_width;
       this->tex_height = tex_height;
+
+      this->light_dir[0] = 0;
+      this->light_dir[1] = 0;
+      this->light_dir[2] = 0;
 
       // The framebuffer, which regroups 0, 1, or more textures, and 0 or 1 depth buffer.
       glGenFramebuffers(1, &depth_fbo);
@@ -52,13 +56,19 @@ public:
       glBindFramebuffer(GL_FRAMEBUFFER, 0);
 
       //default perspective matrix
-      set_perspective_mat(glm::perspective(3.1415f/1.6f, (float)tex_width/(float)tex_height, 1.0f, 1000.0f));
+      set_perspective_mat(glm::perspective(perspective, (float)tex_width/(float)tex_height, 1.0f, 1000.0f));
    }
 
    void set_light_pos(GLfloat light_position[3]){
       this->light_position[0] = light_position[0];
       this->light_position[1] = light_position[1];
       this->light_position[2] = light_position[2];
+   }
+
+   void set_light_dir(GLfloat light_dir[3]){
+      this->light_dir[0] = light_dir[0];
+      this->light_dir[1] = light_dir[1];
+      this->light_dir[2] = light_dir[2];
    }
 
    void set_camera(Camera *cam){
@@ -68,7 +78,7 @@ public:
    glm::mat4x4 get_depth_view_mat(){
       if(camera == NULL){
          glm::vec3 eye(light_position[0], light_position[1], light_position[2]);
-         glm::vec3 center(0.0f, 0.0f, 0.0f);
+         glm::vec3 center(light_dir[0], light_dir[1], light_dir[2]);
          glm::vec3 up(0.0f, 1.0f, 0.0f);
 
          return glm::lookAt(eye, center, up);
@@ -97,7 +107,7 @@ public:
    void draw_fb(std::vector<Drawable*> *lst_drawable){
 
       glm::vec3 eye(light_position[0], light_position[1], light_position[2]);
-      glm::vec3 center(0.0f, 0.0f, 0.0f);
+      glm::vec3 center(light_dir[0], light_dir[1], light_dir[2]);
       glm::vec3 up(0.0f, 1.0f, 0.0f);
 
       glm::mat4x4 view_mat = glm::lookAt(eye, center, up);
@@ -148,6 +158,7 @@ protected:
    unsigned int tex_height;
    GLuint depth_fbo;
    GLfloat light_position[3];
+   GLfloat light_dir[3];
    glm::mat4x4 projection_matrix;
    glm::mat4x4 view_matrix;
    Camera *camera;

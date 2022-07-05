@@ -1,6 +1,6 @@
 # OpenGL examples
 
-<img src="screenshots/grass_1.png" width="200"> <img src="screenshots/shadow_mapping_2.png" width="200"> <img src="screenshots/water_1.png" width="200"> <img src="screenshots/tree_2.png" width="200"> <img src="screenshots/clouds_1.png" width="300"> <img src="screenshots/lod_terrain_2.png" width="300">
+<img src="screenshots/grass_1.png" width="200"> <img src="screenshots/shadow_mapping_2.png" width="200"> <img src="screenshots/water_1.png" width="200"> <img src="screenshots/tree_2.png" width="200"> <img src="screenshots/clouds_1.png" width="300"> <img src="screenshots/lod_terrain_2.png" width="300"> <img src="screenshots/volumetric_light_2.png" width="200">
 
 
 This is a list of examples done a few years ago after taking a computer graphic course to better understand opengl and apply some of the techniques read in the litterature.
@@ -27,6 +27,7 @@ Content of the repo:
 - Volumetric clouds: using combination of 3d and 2d noises and particles
 - Texture filtering: use opengl to smooth textures
 - Tessellation shader: implement the level of detail directly in a shader
+- Volumetric light: post-processing volumetric light using ray casting as in the  [GPU Gems 3 book](https://developer.nvidia.com/gpugems/gpugems3/part-ii-light-and-shadows/chapter-13-volumetric-light-scattering-post-process)
 
 ## How to build
 All of these examples have been tested on the following hardware:

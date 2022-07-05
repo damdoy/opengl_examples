@@ -35,6 +35,12 @@ public:
       direction[2] = center.z-eye.z;
    }
 
+   void get_center(float center[3]){
+      center[0] = this->center.x;
+      center[1] = this->center.y;
+      center[2] = this->center.z;
+   }
+
 
    glm::mat4x4 getMatrix(){
       return glm::lookAt(eye, center, up);
