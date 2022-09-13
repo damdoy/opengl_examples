@@ -19,7 +19,7 @@ LINK_DIRECTORIES(${lib_path})
 add_executable(${PROJECT_NAME} main.cpp)
 
 #copy all glsl files to build folder
-file(GLOB GLSL_FILES "*.glsl")
+file(GLOB_RECURSE GLSL_FILES "*.glsl")
 foreach(glsl_file ${GLSL_FILES})
     configure_file(${glsl_file} . COPYONLY)
 endforeach(glsl_file)
