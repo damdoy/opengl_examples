@@ -64,8 +64,8 @@ GLfloat camera_position[3];
 unsigned int shadow_mapping_effect = 0;
 unsigned int AO_effect = 0;
 
-const int win_width = 1280;
-const int win_height = 720;
+const unsigned int win_width = 1280;
+const unsigned int win_height = 720;
 
 // const int win_width = 400;
 // const int win_height = 400;

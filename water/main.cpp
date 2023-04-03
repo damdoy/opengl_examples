@@ -64,8 +64,8 @@ GLuint light_mode = 0;
 
 unsigned int water_effect = 1;
 
-const int win_width = 1280;
-const int win_height = 720;
+const unsigned int win_width = 1280;
+const unsigned int win_height = 720;
 
 // const int win_width = 400;
 // const int win_height = 400;
