@@ -4,6 +4,7 @@
 # Usage: $ ./build [folder name]
 # you can also run './build all' or simply './build' to build all the projects
 # if you want to clean the projects, you can run './build clean'
+# if you want to remove the 'build' dirs, you can run './build deepclean'
 # The script prompts you about missing dependencies, press 'y' to install them
 
 # Set to 1 to skip the dependency checks.
@@ -84,6 +85,13 @@ elif [[ $opt == "clean" ]]; then
 	for i in $(ls); do
 		if [[ -f "$i/CMakeLists.txt" ]]; then
 			do_build "$i" clean
+		fi
+	done
+elif [[ $opt == "deepclean" ]]; then
+	echo "Deep Cleaning..."
+	for i in $(ls); do
+		if [[ -d "$i/build" ]]; then
+			rm -fr "$i/build"
 		fi
 	done
 else
