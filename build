@@ -1,0 +1,97 @@
+#!/bin/bash
+
+# A build script to automatically install dependencies (on debian, tested on ubuntu 22.04) and build all of the projects for this repo
+# Usage: $ ./build [folder name]
+# you can also run './build all' or simply './build' to build all the projects
+# if you want to clean the projects, you can run './build clean'
+# The script prompts you about missing dependencies, press 'y' to install them
+
+# Set to 1 to skip the dependency checks.
+# Automatically gets set to 1 after a successful run to not waste your time
+# If you are having issues with dependencies, try setting this to 0 as a first measure
+skip_dep_checks=1
+
+odir="$(pwd)"
+opt="${1:-all}"
+
+function fail() {
+	printf >&2- "$1"
+	cd $odir
+	exit 1
+}
+
+[[ $(id -u) == 0 ]] && fail "Don't run this script as root.\n"
+[[ ! $odir =~ .*opengl_examples.* ]] && fail "Is the project/repo root directory called 'opengl_examples'?\nIf you cloned the repo, git should have created an 'opengl_examples' directory. Run the script from there.\n"
+
+function do_build() {
+	printf "\n====================\nSubproject $1...\n\n"
+	cd "$1" 								|| fail "\nDirectory $1 may not exist...\nBuild $1 failed.\n"
+	if [[ ! -d build ]]; then
+		mkdir -p build >> /dev/null
+		cmake .. 							|| fail "\nCMake failed...\nBuild $1 failed.\n"
+	fi
+	cd build
+	if [[ ! -z $2 ]]; then
+		make "$2"							|| fail "\nTarget '$2' didn't succeed...\nBuild $1 failed.\n"
+	else
+		make 								|| fail "\nCode didn't compile...\nBuild $1 failed.\n"
+	fi
+	cd ../..
+}
+
+function dep() {
+	# debian specific, you can change apt and apt-get to be
+	apt list --installed "$1" 2>&1 | grep "$1" > /dev/null
+	if [[ $? != 0 ]]; then
+		printf "\n====================\nYou do not have $1 installed.\n"
+		inp=""
+		read -a inp -n 1 -p "Install it (runs apt--press \"y\"): "
+		if [[ $inp == "y" ]]; then
+			printf "\n"
+			[[ $inp != "" ]] && printf "\n"
+			sudo apt-get -y install "$1"	|| fail "Failed to install $1\n"
+		else
+			[[ $inp != "" ]] && printf "\n"
+			fail "Failed due to missing dependency.\n"
+		fi
+	fi
+}
+
+
+if [[ $skip_dep_checks != 1 ]]; then
+	dep "libglfw3-dev"
+	dep "libglm-dev"
+	dep "libglew-dev"
+	dep "libdevil-dev"
+	pt1='s/skip_dep'
+	pt2='_checks=0/skip_dep_checks=1/g'
+	cat build | sed -i "$pt1$pt2" build
+fi
+
+# get to the root directory
+ndir=${odir%%/opengl_examples*}
+cd "$ndir/opengl_examples"
+
+if [[ $opt == "all" ]]; then
+	echo "Building $opt..."
+	for i in $(ls); do
+		if [[ -f "$i/CMakeLists.txt" ]]; then
+			do_build "$i"
+		fi
+	done
+elif [[ $opt == "clean" ]]; then
+	echo "Cleaning..."
+	for i in $(ls); do
+		if [[ -f "$i/CMakeLists.txt" ]]; then
+			do_build "$i" clean
+		fi
+	done
+else
+	if [[ -f "$opt/CMakeLists.txt" ]]; then
+		do_build "$opt"
+	else
+		fail "\n====================\nCannot build '$opt'.\n"
+	fi
+fi
+
+cd $odir
