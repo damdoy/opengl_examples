@@ -29,9 +29,11 @@ function do_build() {
 	cd "$1" 								|| fail "\nDirectory $1 may not exist...\nBuild $1 failed.\n"
 	if [[ ! -d build ]]; then
 		mkdir -p build >> /dev/null
+		cd build
 		cmake .. 							|| fail "\nCMake failed...\nBuild $1 failed.\n"
+	else
+		cd build
 	fi
-	cd build
 	if [[ ! -z $2 ]]; then
 		make "$2"							|| fail "\nTarget '$2' didn't succeed...\nBuild $1 failed.\n"
 	else
