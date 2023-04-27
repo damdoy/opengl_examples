@@ -30,10 +30,16 @@ Content of the repo:
 - Volumetric light: post-processing volumetric light using ray casting as in the  [GPU Gems 3 book](https://developer.nvidia.com/gpugems/gpugems3/part-ii-light-and-shadows/chapter-13-volumetric-light-scattering-post-process)
 
 ## How to build
+
+Run the `./build` script, it will build each example and the executables will be found in each example folder in the build subfolder. For example `./lod_terrain/build/lod_terrain`
+
+Alternatively, if you want to do it manually, create a `build` folder in the example you want to build, then from the `build` folder, `cmake ..` to populate it and `make` to build the example
+
 All of these examples have been tested on the following hardware:
 
 - Intel HD graphics 620
 - Nvidia GeForce 940MX
+- Nvidia GeForce RTX 3050 Ti Mobile
 
 There were compiled on a Linux Mint 20, the needed libraries are the following:
 
@@ -42,4 +48,4 @@ There were compiled on a Linux Mint 20, the needed libraries are the following:
 - devIl 1.7.8
 - glm 0.9.9.7
 
-Create a `build` folder in the example you want to build, then from the `build` folder, `cmake ..` to populate it and `make` to build the example
+
